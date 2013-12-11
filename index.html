@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../docs-assets/ico/favicon.png">
+
+    <title>p2pool - node stats</title>
+
+    <link href="http://fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,100,100italic,500,500italic,700,700italic,900,900italic" rel="stylesheet" type="text/css">
+    <link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400italic,700italic,400,700' rel='stylesheet' type='text/css'>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+
+    <script src="js/jquery-2.0.3.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-dateFormat.min.js"></script>
+
+    <script src="js/highcharts.js"></script>
+    <script src="js/exporting.js"></script>
+
+    <script src="js/util.js"></script>
+    <script src="js/charts.js"></script>
+
+    <!-- Custom styles for this template -->
+    <link href="grid.css" rel="stylesheet">
+
+    <style type="text/css">
+      body {
+        font-family: 'Roboto', Helvetica, sans-serif;
+        font-size: 14px;
+      }
+    </style>
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../docs-assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="page-header">
+        <h1>p2pool &dash; node dashboard</h1>
+        <b>
+          <small>
+            Node: <span id='node'></span>&nbsp;&dash;
+            Updated: <span id='updated'></span>
+          </small>
+        </b>
+      </div>
+
+      <!-- We should have a possiblity showing other miners on our node what
+           happened or if we have other things to tell them. -->
+      <div class="alert alert-info">
+        <p><b>2013-12-13: This is a message to miners on my node telling them something really cool.</b></p>
+      </div>
+
+
+      <div id='chart'></div>
+
+      <h4>Status</h4>
+      <table id='status' class="table table-hover" border='0'>
+        <tr>
+          <td width='25%'>Local rate:</td>
+          <td width='25%' id='local_rate'></td>
+          <td width='25%'>Expected time to share:</td>
+          <td width='25%' id='expected_time_to_share'></td>
+        </tr>
+        <tr>
+          <td>Global pool rate:</td>
+          <td id='global_rate'></td>
+          <td>Share difficulty:</td>
+          <td id='share_difficulty'></td>
+        </tr>
+        <tr>
+          <td>Current block value:</td>
+          <td id='block_value'></td>
+          <td>Shares:</td>
+          <td id='shares'></td>
+        </tr>
+        <tr>
+          <td>Payout if a block were found NOW:</td>
+          <td id='payout_now'></td>
+          <td>Expected time to block:</td>
+          <td id='expected_time_to_block'></td>
+        </tr>
+        <tr>
+          <td>Node peers:</td>
+          <td id='node_peers'></td>
+          <td>Node uptime:</td>
+          <td id='node_uptime'></td>
+        </tr>
+        <tr>
+          <td>Node p2pool version:</td>
+          <td id='p2pool_version'></td>
+          <td>Protocol version:</td>
+          <td id='protocol_version'></td>
+        </tr>
+        <tr>
+          <td>Node fee:</td>
+          <td id='node_fee'></td>
+          <td>Node donation:</td>
+          <td id='node_donation'></td>
+        </tr>
+      </table>
+
+      <h4>Active miners on this node</h4>
+      <table id='active_miners' class="table table-hover">
+        <tr>
+          <th class='text-left'>Bitcoin Address</th>
+          <th class='text-right'>Hashrate</th>
+          <th class='text-right'>DOA Hashrate</th>
+          <th class='text-right'>DOA %</th>
+          <th class='text-right'>Predicted payout</th>
+        </tr>
+      </table>
+
+      <h4>Recent blocks</h4>
+      <table id='recent_blocks' class="table table-hover">
+        <tr>
+          <th>Date/Time</th>
+          <th>Number</th>
+          <th>Hash</th>
+          <th>Confirmations</th>
+        </tr>
+      </table>
+
+    </div> <!-- /container -->
+    <script type="text/javascript">
+
+    $(document).ready(function() {
+      $(document).trigger('update_status');
+    });
+
+    var myself= [
+      // '1ASiCRtoGLCuntuEhPo61AJStVwuSUy1HG'
+    ];
+
+    var rate, local_stats,
+        global_stats,
+        current_payouts,
+        recent_blocks;
+
+    var local_hashrate= 0, local_doa_hashrate= 0;
+
+    // ==================================================================
+    // custom event handlers
+
+    $(document).on('update_status', function(e, eventInfo) {
+      fetchdata();
+    });
+
+    $(document).on('update_miners', function(e, eventInfo) {
+      $.each(local_stats.miner_hash_rates, function(address, hashrate) {
+        tr= $('<tr/>').attr('id', address);
+
+        // highlight our miner if configured
+        if(myself && myself.length > 0 && $.inArray(address, myself) >= 0) {
+          tr.addClass('warning');
+        }
+
+        // // create link to blockchain.info for addresses
+        blockinfo= $('<a/>')
+          .attr('href', 'https://blockchain.info/address/' + address)
+          .attr('target', '_blank').text(address);
+
+        doa= local_stats.miner_dead_hash_rates[address];
+        doa_prop= (parseFloat(doa) / parseFloat(hashrate)) * 100;
+
+        local_hashrate+= hashrate;
+        local_doa_hashrate+= doa;
+
+        tr.append($('<td/>').attr('class', 'text-left')
+          .append(blockinfo));
+        tr.append($('<td/>').attr('class', 'text-right')
+          .append(formatHashrate(hashrate)));
+        tr.append($('<td/>').attr('class', 'text-right')
+          .append(formatHashrate(doa)));
+        tr.append($('<td/>').attr('class', 'text-right')
+          .append(doa_prop.toFixed(2) + '%'));
+
+        payout= current_payouts[address];
+
+        if(payout) {
+          tr.append($('<td/>').attr('class', 'text-right')
+            .append(parseFloat(payout).toFixed(8)));
+        }
+        else {
+          tr.append($('<td/>').attr('class', 'text-right')
+            .append($('<i/>').append('no shares yet')));
+        }
+        $('#'+address).remove(); $('#active_miners').append(tr);
+      });
+
+      console.log(local_stats);
+      console.log(current_payouts);
+    });
+
+    $(document).on('update_blocks', function(e, eventInfo) {
+      $.each(recent_blocks, function(key, block) {
+        ts= block.ts; num= block.number; hash= block.hash;
+
+        // // link to blockchain.info for the given hash
+        blockinfo= $('<a/>')
+          .attr('href', 'https://blockchain.info/de/block-index/' + hash)
+          .attr('target', '_blank').text(hash);
+
+        tr= $('<tr/>').attr('id', num);
+        tr.append($('<td/>').append($.format.prettyDate(new Date(ts * 1000))));
+        tr.append($('<td/>').append(num));
+        tr.append($('<td/>').append(blockinfo));
+        tr.append($('<td/>').html('&dash;'));
+
+        $('#recent_blocks').append(tr);
+      });
+    });
+
+    $(document).on('localstats_ready', function(e, eventInfo) {
+    });
+
+    $(document).on('globalstats_ready', function(e, eventInfo) {
+    });
+
+    // Updates the 'Updated:' field in page header
+    $(document).on('update_time', function(e, eventInfo) {
+      dts= $.format.date(new Date(), 'yyyy-MM-dd HH:mm:ss');
+      $('#updated').text(dts);
+    });
+
+    // ==================================================================
+
+    var fetchdata= function() {
+      $.getJSON('/local_stats', function(data) {
+        if(data) local_stats= data;
+        $.getJSON('/current_payouts', function(data) {
+          if(data) current_payouts= data;
+          $(document).trigger('update_miners');
+          $(document).trigger('update_time');
+        });
+      });
+
+      $.getJSON('/recent_blocks', function(data) {
+        if(data) recent_blocks= data;
+        $(document).trigger('update_blocks');
+      });
+
+      $.getJSON('/rate', function(data) {
+        if(data) rate= data;
+      });
+
+      var graph_hashrate= [],
+          graph_doa_hashrate= [];
+
+      $.getJSON('/web/graph_data/local_hash_rate/last_day', function(data) {
+        $.each(data, function(key, value) {
+          el= []; el.push(parseInt(value[0]) * 1000,
+            parseFloat(value[1]));
+          graph_hashrate.push(el);
+        });
+        graph_hashrate.sort();
+        $.getJSON('/web/graph_data/local_dead_hash_rate/last_day', function(data) {
+          $.each(data, function(key, value) {
+            el= []; el.push(parseInt(value[0]) * 1000,
+              parseFloat(value[1]));
+            graph_doa_hashrate.push(el);
+          });
+          graph_doa_hashrate.sort();
+          draw(graph_hashrate, graph_doa_hashrate);
+        })
+      })
+    };
+    </script>
+  </body>
+</html>
