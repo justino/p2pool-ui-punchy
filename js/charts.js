@@ -3,7 +3,7 @@ var draw= function(hashrate, doarate) {
     chart: { renderTo: 'chart' },
     credits: { enabled: false },
     exporting: { enabled: false },
-    title: { text: '24 hour local hashrate' },
+    title: { text: 'Hashrate/DOA rate' },
     rangeSelector: {
       selected: 1,
       enabled: true,

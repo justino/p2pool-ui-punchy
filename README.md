@@ -5,10 +5,17 @@ An alternative clean p2pool node dashboard. It uses Bootstrap, jQuery and Highch
 
 ## Installation
 
-On your p2pool node in web-static directory do:
+To run this dashboard in parallel to your current p2pool web interface, do in your web-static directory:
 
 ```
 git clone https://github.com/johndoe75/p2pool-node-status.git
+```
+
+If you want to use it as replacement for your current web-static, then do in the top directory of your p2pool installation
+
+```
+mv web-static _web-static-pre
+git clone https://github.com/johndoe75/p2pool-node-status.git web-static
 ```
 
 If you want your miner address highlighted, adjust `myself` variable accordingly. E. g.

@@ -70,59 +70,70 @@
 
       <!-- We should have a possiblity showing other miners on our node what
            happened or if we have other things to tell them. -->
-      <div class="alert alert-info">
+      <div class="alert alert-info hidden">
         <p><b>2013-12-13: This is a message to miners on my node telling them something really cool.</b></p>
       </div>
 
+      <center>
+        <div class='container'>
+          <button id='hour' type="button" class="hashrate btn btn-info">Hour</button>
+          <button id='day' type="button" class="hashrate btn btn-info">Day</button>
+          <button id='week' type="button" class="hashrate btn btn-info">Week</button>
+          <button id='month' type="button" class="hashrate btn btn-info">Month</button>
+          <button id='year' type="button" class="hashrate btn btn-info">Year</button>
+        </div>
+      </center>
       <div id='chart'></div>
 
       <h4>Status</h4>
       <table id='status' class="table table-hover" border='0'>
         <tr>
           <td width='25%'>Local rate:</td>
-          <td width='25%' class='text-right' id='local_rate'></td>
-          <td>Shares:</td>
-          <td class='text-right' id='shares'></td>
+          <td width='25%' class='text-right'><span id='local_rate'></span></td>
+          <td width='25%'>Shares:</td>
+          <td width='25%' class='text-right'><span id='shares'></span></td>
         </tr>
         <tr>
-          <td>Global pool rate:</td>
-          <td class='text-right' id='global_rate'></td>
-          <td>Share difficulty:</td>
-          <td class='text-right' id='share_difficulty'></td>
+          <td width='25%'>Global pool rate:</td>
+          <td width='25%' class='text-right'><span id='global_rate'></span></td>
+          <td width='25%'>Share difficulty:</td>
+          <td width='25%' class='text-right'><span id='share_difficulty'></span></td>
         </tr>
         <tr>
-          <td>Current block value:</td>
-          <td class='text-right' id='block_value'></td>
+          <td width='25%'>Current block value:</td>
+          <td width='25%' class='text-right'><span id='block_value'></span></td>
           <td width='25%'>Expected time to share:</td>
-          <td width='25%' class='text-right' id='expected_time_to_share'></td>
+          <td width='25%' class='text-right'><span id='expected_time_to_share'></span></td>
         </tr>
         <tr>
-          <td>Payout if a block were found NOW:</td>
-          <td class='text-right' id='payout_now'></td>
-          <td>Expected time to block:</td>
-          <td class='text-right' id='expected_time_to_block'></td>
+          <td width='25%'>Payout if a block were found NOW:</td>
+          <td width='25%' class='text-right'><span id='payout_now'></span></td>
+          <td width='25%'>Expected time to block:</td>
+          <td width='25%' class='text-right'><span id='expected_time_to_block'></span></td>
         </tr>
         <tr>
-          <td>Node peers:</td>
-          <td class='text-right' id='node_peers'>
-            <i id='peers_in' class='fa fa-sign-in fa-fw'></i>
+          <td width='25%'>Node peers:</td>
+          <td width='25%' class='text-right'>
+            <i class='fa fa-sign-in fa-fw'></i>
+            <span id='peers_in'></span>
             /
-            <i id='peers_out' class='fa fa-sign-out fa-fw'></i>
+            <i class='fa fa-sign-out fa-fw'></i>
+            <span id='peers_out'></span>
           </td>
-          <td>Node uptime:</td>
-          <td class='text-right' id='node_uptime'></td>
+          <td width='25%'>Node uptime:</td>
+          <td width='25%' class='text-right'><span id='node_uptime'></span></td>
         </tr>
         <tr>
-          <td>Node p2pool version:</td>
-          <td class='text-right' id='p2pool_version'></td>
-          <td>Protocol version:</td>
-          <td class='text-right' id='protocol_version'></td>
+          <td width='25%'>Node p2pool version:</td>
+          <td width='25%' class='text-right'><span id='p2pool_version'></span></td>
+          <td width='25%'>Protocol version:</td>
+          <td width='25%' class='text-right'><span id='protocol_version'></span></td>
         </tr>
         <tr>
-          <td>Node fee:</td>
-          <td class='text-right' id='node_fee'></td>
-          <td>Node donation:</td>
-          <td class='text-right' id='node_donation'></td>
+          <td width='25%'>Node fee:</td>
+          <td width='25%' class='text-right'><span id='node_fee'></span></td>
+          <td width='25%'>Node donation:</td>
+          <td width='25%' class='text-right'><span id='node_donation'></span></td>
         </tr>
       </table>
 
@@ -156,13 +167,30 @@
 
     // array defining my addresses for highlighting them
 
-    var myself= [
-      '1ASiCRtoGLCuntuEhPo61AJStVwuSUy1HG'
-    ];
+    var myself= [ ];
 
     var currency, currency_info, rate, local_stats,
         global_stats, current_payouts, recent_blocks;
     var local_hashrate= 0, local_doa_hashrate= 0;
+
+    // ==================================================================
+    // event handlers
+
+    $('#hour.hashrate').click(function(e) {
+      fetchGraph('hour');
+    });
+    $('#day.hashrate').click(function(e) {
+      fetchGraph('day');
+    });
+    $('#week.hashrate').click(function(e) {
+      fetchGraph('week');
+    });
+    $('#month.hashrate').click(function(e) {
+      fetchGraph('month');
+    });
+    $('#year.hashrate').click(function(e) {
+      fetchGraph('year');
+    });
 
     // ==================================================================
     // custom event handlers
@@ -170,7 +198,7 @@
     // init
 
     $(document).on('init', function(e, eventInfo) {
-      fetchdata(); fetchBlocks(); fetchGraph();
+      fetchdata(); fetchBlocks(); fetchGraph('day');
     });
 
     $(document).on('update', function(e, eventInfo) {
@@ -182,6 +210,7 @@
     // interested to see, who is mining on my node.
 
     $(document).on('update_miners', function(e, eventInfo) {
+      local_hashrate= 0; local_doa_hashrate= 0;
       $.each(local_stats.miner_hash_rates, function(address, hashrate) {
         tr= $('<tr/>').attr('id', address);
 
@@ -256,16 +285,27 @@
       $('#protocol_version')
         .text(local_stats.protocol_version);
 
-      $('#peers_in').after(local_stats.peers.incoming);
-      $('#peers_out').after(local_stats.peers.outgoing);
+      $('#peers_in').text(local_stats.peers.incoming);
+      $('#peers_out').text(local_stats.peers.outgoing);
 
       $('#node_uptime').text(('' + local_stats.uptime).formatSeconds());
 
       if(local_stats.warnings.length > 0) {
+        $('#node_alerts').empty();
+
         $.each(local_stats.warnings, function(key, warning) {
           $('#node_alerts').append($('<p/>').append(warning));
         });
-        $('#node_alerts').removeClass('hidden');
+
+        $('#node_alerts').fadeIn(1000, function() {
+          $(this).removeClass('hidden');
+        });
+      }
+      else {
+        if(!$('#node_alerts').hasClass('hidden'))
+          $('#node_alerts').fadeOut(1000, function() {
+            $(this).addClass('hidden');
+          });
       }
 
       $('#shares')
@@ -304,6 +344,7 @@
     // Places the currency this node is mining in the page header.  If it's
     // Bitcoin, use the fontawesome BTC icon.
 
+    var set_currency_symbol= true;
     $(document).on('update_currency', function(e, eventInfo) {
       if(currency_info.symbol === 'BTC') {
         // use fontawesome BTC symbol
@@ -311,8 +352,11 @@
       }
       else { currency= $('<span/>').append(currency_info.symbol); }
 
-      $('#currency')
-        .append('(').append(currency).append(')');
+      if(set_currency_symbol) {
+        $('#currency')
+          .append('(').append(currency).append(')');
+        set_currency_symbol= false;
+      }
     });
 
     // Updates the 'Updated:' field in page header
@@ -350,15 +394,18 @@
     };
 
     var fetchBlocks= function() {
-      $.getJSON('/recent_blocks', function(data) {
-        if(data) recent_blocks= data;
-        $(document).trigger('update_blocks');
+      $.getJSON('/web/currency_info', function(data) {
+        currency_info= data;
+        $.getJSON('/recent_blocks', function(data) {
+          if(data) recent_blocks= data;
+          $(document).trigger('update_blocks');
+        });
       });
     }
 
-    var fetchGraph= function() {
-      var graph_hashrate= [],
-          graph_doa_hashrate= [], interval= 'week';
+    var fetchGraph= function(interval) {
+      console.log(interval);
+      var graph_hashrate= [], graph_doa_hashrate= [];
 
       $.getJSON('/web/graph_data/local_hash_rate/last_' + interval, function(data) {
         $.each(data, function(key, value) {
@@ -389,7 +436,7 @@
 
     setInterval(function() {
       $(document).trigger('update');
-    }, 15 * 1000);
+    }, 10 * 1000);
 
     </script>
   </body>
