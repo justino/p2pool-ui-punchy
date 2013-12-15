@@ -34,7 +34,10 @@
     <style type="text/css">
       body {
         font-family: 'Roboto', Helvetica, sans-serif;
-        font-size: 14px;
+        font-size: 13px;
+      }
+      #myModal .modal-dialog {
+        width: 70%;/* your width */
       }
     </style>
 
@@ -60,7 +63,8 @@
         <h1>p2pool <span id='currency'></span> &dash; node dashboard</h1>
         <b>
           <small>
-            Node: <span id='node'></span>&nbsp;&dash;
+            <span id='_node' class='hidden'>Node: </span>
+            <span id='node' class='hidden'></span><br/>
             Updated: <span id='updated'></span>
           </small>
         </b>
@@ -159,6 +163,38 @@
       </table>
 
     </div> <!-- /container -->
+
+    <!-- Chart modal dialog -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel"></h4>
+          </div>
+          <div class="modal-body"><div id='miner_chart' data-highcharts-chart='3'></div></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+
+    <div id='footer'>
+      <div class='container'>
+        <hr>
+        <p class='text-center'>
+          Interface by johndoe75
+          &dash;
+          <a href="https://github.com/johndoe75/p2pool-node-status.git">https://github.com/johndoe75/p2pool-node-status.git</a>
+        </p>
+        <p class='text-center'>
+          Donate some coins, if you like it <code>1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe</code>
+          (<i class='fa fa-btc'></i>) or <code>LSRfZJf75MtwzrbAUfQgqzdK4hHpY4oMW3</code> (LTC)
+        </p>
+      </div>
+    </div>
     <script type="text/javascript">
 
     $(document).ready(function() {
@@ -167,14 +203,39 @@
 
     // array defining my addresses for highlighting them
 
-    var myself= [ ];
+    var myself= ['1ASiCRtoGLCuntuEhPo61AJStVwuSUy1HG'];
+
+    // the PHP JSONP handler for remote query
+
+    var jsonp='./jsonp.php?callback=?';
+
+    // if this dashboard shall run a different server than the
+    // p2pool, the JSONP handler must be used.  Set the hostname
+    // and port of the p2pool for remote query.
+    //
+    // If it's running in web-static of your p2pool, leave this
+    // variable empty!
+    //
+    // http://<host>:<port>
+
+    var host= 'http://p2pool.tr2-it.de:9332';
+
+    var api_url= '';
 
     var currency, currency_info, rate, local_stats,
         global_stats, current_payouts, recent_blocks;
     var local_hashrate= 0, local_doa_hashrate= 0;
 
+    if(host && host.length > 0) {
+      api_url= jsonp + '&host=' + encodeURI(host) + '&report=';
+      $('#node').removeClass('hidden').text(host);
+      $('#_node').removeClass('hidden');
+    }
+
     // ==================================================================
     // event handlers
+
+    // toggle hashrate chart
 
     $('#hour.hashrate').click(function(e) {
       fetchGraph('hour');
@@ -190,6 +251,34 @@
     });
     $('#year.hashrate').click(function(e) {
       fetchGraph('year');
+    });
+
+    $('body').on('click', 'i.chart_modal', function(e) {
+      graph_hashrate= [], graph_doa_hashrate= [];
+
+      address= $(this).parent().find('span.coin_address').text();
+      $('#myModalLabel').text(address);
+      $('#myModal').modal('show');
+
+      interval= 'day';
+      $.getJSON(api_url + '/web/graph_data/local_hash_rate/last_' + interval, function(data) {
+        $.each(data, function(key, value) {
+          el= []; el.push(parseInt(value[0]) * 1000,
+            parseFloat(value[1]));
+          graph_hashrate.push(el);
+        });
+        graph_hashrate.sort();
+        $.getJSON(api_url + '/web/graph_data/local_dead_hash_rate/last_' + interval, function(data) {
+          $.each(data, function(key, value) {
+            el= []; el.push(parseInt(value[0]) * 1000,
+              parseFloat(value[1]));
+            graph_doa_hashrate.push(el);
+          });
+          graph_doa_hashrate.sort();
+          draw(graph_hashrate, graph_doa_hashrate, 'miner_chart');
+        });
+      });
+
     });
 
     // ==================================================================
@@ -219,7 +308,9 @@
           tr.addClass('warning');
         }
 
-        link_icon= $('<i/>').attr('class', 'fa fa-external-link fa-fw');
+        address_span= $('<span/>').addClass('coin_address').text(address);
+        chart_icon= $('<i/>').addClass('fa fa-bar-chart-o fa-fw chart_modal');
+        link_icon= $('<i/>').addClass('fa fa-external-link fa-fw');
         blockinfo= $('<a/>')
           .attr('href', currency_info.address_explorer_url_prefix + address)
           .attr('target', '_blank').append(link_icon);
@@ -230,13 +321,16 @@
         local_hashrate+= hashrate;
         local_doa_hashrate+= doa;
 
-        tr.append($('<td/>').attr('class', 'text-left')
-          .html(address + '&nbsp;').append(blockinfo));
-        tr.append($('<td/>').attr('class', 'text-right')
+        tr.append($('<td/>').addClass('text-left')
+          .append(address_span)
+          .append('&nbsp;')
+          .append(chart_icon)
+          .append(blockinfo));
+        tr.append($('<td/>').addClass('text-right')
           .append(formatHashrate(hashrate)));
-        tr.append($('<td/>').attr('class', 'text-right')
+        tr.append($('<td/>').addClass('text-right')
           .append(formatHashrate(doa)));
-        tr.append($('<td/>').attr('class', 'text-right')
+        tr.append($('<td/>').addClass('text-right')
           .append(doa_prop.toFixed(2) + '%'));
 
         payout= current_payouts[address];
@@ -369,20 +463,20 @@
     // ==================================================================
 
     var fetchdata= function() {
-      $.getJSON('/rate', function(data) {
+      $.getJSON(api_url + '/rate', function(data) {
         if(data) rate= data;
 
-        $.getJSON('/web/currency_info', function(data) {
+        $.getJSON(api_url + '/web/currency_info', function(data) {
           currency_info= data;
           $(document).trigger('update_currency');
 
-          $.getJSON('/local_stats', function(data) {
+          $.getJSON(api_url + '/local_stats', function(data) {
             if(data) local_stats= data;
 
-            $.getJSON('/current_payouts', function(data) {
+            $.getJSON(api_url + '/current_payouts', function(data) {
               if(data) current_payouts= data;
 
-              $.getJSON('/global_stats', function(data) {
+              $.getJSON(api_url + '/global_stats', function(data) {
                 if(data) global_stats= data;
                 $(document).trigger('update_miners');
                 $(document).trigger('update_time');
@@ -394,9 +488,9 @@
     };
 
     var fetchBlocks= function() {
-      $.getJSON('/web/currency_info', function(data) {
+      $.getJSON(api_url + '/web/currency_info', function(data) {
         currency_info= data;
-        $.getJSON('/recent_blocks', function(data) {
+        $.getJSON(api_url + '/recent_blocks', function(data) {
           if(data) recent_blocks= data;
           $(document).trigger('update_blocks');
         });
@@ -404,26 +498,25 @@
     }
 
     var fetchGraph= function(interval) {
-      console.log(interval);
       var graph_hashrate= [], graph_doa_hashrate= [];
 
-      $.getJSON('/web/graph_data/local_hash_rate/last_' + interval, function(data) {
+      $.getJSON(api_url + '/web/graph_data/local_hash_rate/last_' + interval, function(data) {
         $.each(data, function(key, value) {
           el= []; el.push(parseInt(value[0]) * 1000,
             parseFloat(value[1]));
           graph_hashrate.push(el);
         });
         graph_hashrate.sort();
-        $.getJSON('/web/graph_data/local_dead_hash_rate/last_' + interval, function(data) {
+        $.getJSON(api_url + '/web/graph_data/local_dead_hash_rate/last_' + interval, function(data) {
           $.each(data, function(key, value) {
             el= []; el.push(parseInt(value[0]) * 1000,
               parseFloat(value[1]));
             graph_doa_hashrate.push(el);
           });
           graph_doa_hashrate.sort();
-          draw(graph_hashrate, graph_doa_hashrate);
-        })
-      })
+          draw(graph_hashrate, graph_doa_hashrate, 'chart');
+        });
+      });
     }
 
     // Let the GitHub ribbon fade out and be removed after 5 seconds.
@@ -434,9 +527,11 @@
       });
     }, 10 * 1000);
 
+    var reload_interval= 20; // seconds
+
     setInterval(function() {
       $(document).trigger('update');
-    }, 10 * 1000);
+    }, reload_interval * 1000);
 
     </script>
   </body>

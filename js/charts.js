@@ -1,13 +1,13 @@
-var draw= function(hashrate, doarate) {
+var draw= function(hashrate, doarate, renterTo) {
   char= new Highcharts.Chart({
-    chart: { renderTo: 'chart' },
+    chart: {
+      renderTo: 'chart',
+      animation: true,
+      borderWidth: 0,
+    },
     credits: { enabled: false },
     exporting: { enabled: false },
-    title: { text: 'Hashrate/DOA rate' },
-    rangeSelector: {
-      selected: 1,
-      enabled: true,
-    },
+    title: { text: 'Node Hash/DOA-Rate' },
     xAxis: {
       type: 'datetime',
       maxZoom: 24 * 3600,
@@ -16,13 +16,54 @@ var draw= function(hashrate, doarate) {
       }
     },
     yAxis: {
+      labels: {
+        formatter: function() {
+          if(this.value > Math.pow(1000, 4))
+            { return (this.value / Math.pow(1000, 4)) + ' TH/s'; }
+          if(this.value > Math.pow(1000, 3))
+            { return (this.value / Math.pow(1000, 3)) + ' GH/s'; }
+          if(this.value > Math.pow(1000, 2))
+            { return (this.value / Math.pow(1000, 2)) + ' MH/s'; }
+          if(this.value > Math.pow(1000, 1))
+            { return (this.value / Math.pow(1000, 1)) + ' KH/s'; }
+          return this.value + ' H/s';
+        },
+      },
       title: {
         text: 'Hashrate'
       },
       min: 0,
     },
     tooltip: {
-      shared: true
+      formatter: function() {
+        var s= '<b>' + new Date(this.x) + '</b>';
+
+        var hashrate= 0, doarate= 0;
+        $.each(this.points, function(i, point) {
+          if(point.series.name==='Dead on arrival') { doarate= point.y; }
+          if(point.series.name==='Hashrate') { hashrate= point.y; }
+
+          if(point.y > Math.pow(1000, 4))
+            { val= (point.y / Math.pow(1000, 4)).toFixed(2) + ' TH/s'; }
+          else if(point.y > Math.pow(1000, 3))
+            { val= (point.y / Math.pow(1000, 3)).toFixed(2) + ' GH/s'; }
+          else if(point.y > Math.pow(1000, 2))
+            { val= (point.y / Math.pow(1000, 2)).toFixed(2) + ' MH/s'; }
+          else if(point.y > Math.pow(1000, 1))
+            { val= (point.y / Math.pow(1000, 1)).toFixed(2) + ' KH/s'; }
+          else { val= point.y + ' H/s'; }
+          s+= '<br/>' + point.series.name + ': ' + val;
+        });
+
+        // if we display hash and doa, attach percentage to the doa rate
+        if(hashrate > 0 && doarate > 0) {
+          prop= ((doarate / hashrate) * 100).toFixed(2);
+          s+= ' (' + prop + '%)';
+        }
+        return s;
+      },
+      shared: true,
+      valueSuffix: ' H/s',
     },
     legend: {
       enabled: true,
@@ -32,28 +73,30 @@ var draw= function(hashrate, doarate) {
       areaspline: {
         fillColor: '#ace',
         marker: { enabled: false },
-        lineWidth: 1,
+        lineWidth: 2,
         shadow: false,
         states: {
-          hover: { lineWidth: 1 }
+          hover: { lineWidth: 2 }
         },
-        threshold: null
+        threshold: null,
+        animation: false
       },
       spline: {
         marker: { enabled: false },
-        lineWidth: 1,
-        shadow: true,
+        lineWidth: 2,
+        shadow: false,
         states: {
-          hover: { lineWidth: 1 }
+          hover: { lineWidth: 2 }
         },
-        threshold: null
+        threshold: null,
+        animation: false,
       },
     },
     series: [{
       type: 'areaspline',
       name: 'Hashrate',
       data: hashrate,
-      lineWidth: 2,
+      lineWidth: 1,
       marker: {
         enabled: false
       },
