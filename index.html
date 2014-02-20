@@ -197,7 +197,7 @@
 
     // array defining my addresses for highlighting them
 
-    var myself= [ ];
+    var myself= ['1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe'];
 
     // the PHP JSONP handler for remote query
 
@@ -212,7 +212,7 @@
     //
     // http://<host>:<port>
 
-    var host= '';
+    var host= 'http://p2pool.org:9322';
 
     var api_url= '';
 
@@ -478,7 +478,6 @@
       $.getJSON(api_url + '/web/currency_info', function(data) {
         currency_info= data;
         $.getJSON(api_url + '/recent_blocks', function(data) {
-          console.log(recent_blocks);
           if(data) recent_blocks= data;
           $(document).trigger('update_blocks');
         });
@@ -517,9 +516,6 @@
       });
     }, 10 * 1000);
 
-    setInterval(function() {
-      $(document).trigger('update');
-    }, 10 * 1000);
     var reload_interval= 10; // seconds
 
     setInterval(function() {
