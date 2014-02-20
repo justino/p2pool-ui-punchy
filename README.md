@@ -5,24 +5,12 @@ An alternative clean p2pool node dashboard. It uses Bootstrap, jQuery and Highch
 
 ## Installation
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 To run this dashboard in parallel to your current p2pool web interface, do in your web-static directory:
-=======
-On your p2pool node in web-static directory do:
->>>>>>> e7bc537... First shot. Only partly done yet.  Still under high development.  Consider as alpha
-=======
-To run this dashboard in parallel to your current p2pool web interface, do in your web-static directory:
->>>>>>> 55d13d9... Merged from devel tree
 
 ```
 git clone https://github.com/johndoe75/p2pool-node-status.git
 ```
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 55d13d9... Merged from devel tree
 If you want to use it as replacement for your current web-static, then do in the top directory of your p2pool installation
 
 ```
@@ -44,11 +32,6 @@ Beware:  This will put network traffic on your p2pool node just for periodically
 
 ### Highlight your own miner address
 
-<<<<<<< HEAD
-=======
->>>>>>> e7bc537... First shot. Only partly done yet.  Still under high development.  Consider as alpha
-=======
->>>>>>> 55d13d9... Merged from devel tree
 If you want your miner address highlighted, adjust `myself` variable accordingly. E. g.
 
 ``` JavaScript
@@ -67,21 +50,9 @@ Alexander Zschach <alex@zschach.net>
 
 If you like this tool, find it useful or if you just find it useful, that people out there writing free software for everybody to use or contribute, please donate some coins:
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-Bitcoins 1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe
-Litecoins LSRfZJf75MtwzrbAUfQgqzdK4hHpY4oMW3
-Terracoins 1MsuC6knLeZKHCyQ39Xcw1qcgScS1ZK5R
-=======
 Bitcoins 1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe   
 Litecoins LSRfZJf75MtwzrbAUfQgqzdK4hHpY4oMW3   
 Terracoins 1MsuC6knLeZKHCyQ39Xcw1qcgScS1ZK5R   
->>>>>>> e7bc537... First shot. Only partly done yet.  Still under high development.  Consider as alpha
-=======
-Bitcoins 1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe  
-Litecoins LSRfZJf75MtwzrbAUfQgqzdK4hHpY4oMW3  
-Terracoins 1MsuC6knLeZKHCyQ39Xcw1qcgScS1ZK5R  
->>>>>>> 55d13d9... Merged from devel tree
 Feathercoins 6tfEE48qk8Kgs9ancC82Y2iQBSX3VGYXfL
 
 ### License
