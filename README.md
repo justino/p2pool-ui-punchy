@@ -5,12 +5,24 @@ An alternative clean p2pool node dashboard. It uses Bootstrap, jQuery and Highch
 
 ## Installation
 
+<<<<<<< HEAD
+<<<<<<< HEAD
 To run this dashboard in parallel to your current p2pool web interface, do in your web-static directory:
+=======
+On your p2pool node in web-static directory do:
+>>>>>>> e7bc537... First shot. Only partly done yet.  Still under high development.  Consider as alpha
+=======
+To run this dashboard in parallel to your current p2pool web interface, do in your web-static directory:
+>>>>>>> 55d13d9... Merged from devel tree
 
 ```
 git clone https://github.com/johndoe75/p2pool-node-status.git
 ```
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 55d13d9... Merged from devel tree
 If you want to use it as replacement for your current web-static, then do in the top directory of your p2pool installation
 
 ```
@@ -18,6 +30,25 @@ mv web-static _web-static-pre
 git clone https://github.com/johndoe75/p2pool-node-status.git web-static
 ```
 
+### Use a different host
+
+You can run this interface on a different host than your p2pool node.  To do so you need to configure the API address of your p2pool server.  For this set the variable `host` in index.html appropriately.  E.g.:
+
+```
+var host= 'http://p2pool.org:9332';
+```
+
+In order to run this UI like this, the node the UI is running on must have PHP available.  This is required due to a required JSONP handler.
+
+Beware:  This will put network traffic on your p2pool node just for periodically fetching stats from p2pool API!  It can, but must not, result in a higher variance!
+
+### Highlight your own miner address
+
+<<<<<<< HEAD
+=======
+>>>>>>> e7bc537... First shot. Only partly done yet.  Still under high development.  Consider as alpha
+=======
+>>>>>>> 55d13d9... Merged from devel tree
 If you want your miner address highlighted, adjust `myself` variable accordingly. E. g.
 
 ``` JavaScript
@@ -36,9 +67,21 @@ Alexander Zschach <alex@zschach.net>
 
 If you like this tool, find it useful or if you just find it useful, that people out there writing free software for everybody to use or contribute, please donate some coins:
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+Bitcoins 1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe
+Litecoins LSRfZJf75MtwzrbAUfQgqzdK4hHpY4oMW3
+Terracoins 1MsuC6knLeZKHCyQ39Xcw1qcgScS1ZK5R
+=======
 Bitcoins 1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe   
 Litecoins LSRfZJf75MtwzrbAUfQgqzdK4hHpY4oMW3   
 Terracoins 1MsuC6knLeZKHCyQ39Xcw1qcgScS1ZK5R   
+>>>>>>> e7bc537... First shot. Only partly done yet.  Still under high development.  Consider as alpha
+=======
+Bitcoins 1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe  
+Litecoins LSRfZJf75MtwzrbAUfQgqzdK4hHpY4oMW3  
+Terracoins 1MsuC6knLeZKHCyQ39Xcw1qcgScS1ZK5R  
+>>>>>>> 55d13d9... Merged from devel tree
 Feathercoins 6tfEE48qk8Kgs9ancC82Y2iQBSX3VGYXfL
 
 ### License

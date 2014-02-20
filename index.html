@@ -152,8 +152,9 @@
         </tr>
       </table>
 
+<!--
       <h4>Pool Shares</h4>
-      <table id='recent_blocks' class="table table-hover">
+      <table id='recent_shares' class="table table-hover">
         <tr>
           <th width='50%' class='text-left'>Date/Time</th>
           <th width='15%' class='text-right'>Number</th>
@@ -161,6 +162,7 @@
           <th width='20%' class='text-right'>Confirmations</th>
         </tr>
       </table>
+ -->
 
       <h4>Recent blocks</h4>
       <table id='recent_blocks' class="table table-hover">
@@ -195,7 +197,7 @@
 
     // array defining my addresses for highlighting them
 
-    var myself= ['1ASiCRtoGLCuntuEhPo61AJStVwuSUy1HG'];
+    var myself= ['1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe'];
 
     // the PHP JSONP handler for remote query
 
@@ -210,7 +212,24 @@
     //
     // http://<host>:<port>
 
-    var host= 'http://swillux.swill.org:9332';
+    var host= '';
+
+    var api_url= '';
+
+    // the PHP JSONP handler for remote query
+
+    var jsonp='./jsonp.php?callback=?';
+
+    // if this dashboard shall run a different server than the
+    // p2pool, the JSONP handler must be used.  Set the hostname
+    // and port of the p2pool for remote query.
+    //
+    // If it's running in web-static of your p2pool, leave this
+    // variable empty!
+    //
+    // http://<host>:<port>
+
+    var host= 'http://p2pool.org:9322';
 
     var api_url= '';
 
@@ -253,7 +272,9 @@
     // init
 
     $(document).on('init', function(e, eventInfo) {
-      fetchdata(); fetchBlocks(); fetchGraph('day'); fetchPeers();
+      fetchdata();
+      fetchBlocks(); /*fetchShares();*/
+      fetchGraph('day'); /*fetchPeers();*/
     });
 
     $(document).on('update', function(e, eventInfo) {
@@ -289,6 +310,7 @@
         tr.append($('<td/>').addClass('text-left')
           .append(address_span)
           .append('&nbsp;')
+          //.append(chart_icon)
           .append(blockinfo));
         tr.append($('<td/>').addClass('text-right')
           .append(formatHashrate(hashrate)));
@@ -382,6 +404,24 @@
     // Fills the recent block table
 
     $(document).on('update_blocks', function(e, eventInfo) {
+      $.each(recent_blocks, function(key, block) {
+        ts= block.ts; num= block.number; hash= block.hash;
+
+        // link to blockchain.info for the given hash
+        blockinfo= $('<a/>')
+          .attr('href', currency_info.block_explorer_url_prefix + hash)
+          .attr('target', '_blank').text(hash);
+
+        tr= $('<tr/>').attr('id', num);
+        tr.append($('<td/>').append($.format.prettyDate(new Date(ts * 1000))));
+        tr.append($('<td/>').append(num));
+        tr.append($('<td/>').append(blockinfo));
+        tr.append($('<td/>').html('&dash;'));
+        $('#recent_blocks').append(tr);
+      });
+    });
+
+    $(document).on('update_shares', function(e, eventInfo) {
       $.each(recent_blocks, function(key, block) {
         ts= block.ts; num= block.number; hash= block.hash;
 
