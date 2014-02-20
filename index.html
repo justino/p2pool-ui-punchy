@@ -34,7 +34,10 @@
     <style type="text/css">
       body {
         font-family: 'Roboto', Helvetica, sans-serif;
-        font-size: 14px;
+        font-size: 13px;
+      }
+      #myModal .modal-dialog {
+        width: 70%;/* your width */
       }
     </style>
 
@@ -60,7 +63,8 @@
         <h1>p2pool <span id='currency'></span> &dash; node dashboard</h1>
         <b>
           <small>
-            Node: <span id='node'></span>&nbsp;&dash;
+            <span id='_node' class='hidden'>Node: </span>
+            <span id='node' class='hidden'></span><br/>
             Updated: <span id='updated'></span>
           </small>
         </b>
@@ -140,13 +144,25 @@
       <h4>Active miners on this node</h4>
       <table id='active_miners' class="table table-hover">
         <tr>
-          <th class='text-left'>Bitcoin Address</th>
-          <th class='text-right'>Hashrate</th>
-          <th class='text-right'>DOA Hashrate</th>
-          <th class='text-right'>DOA %</th>
-          <th class='text-right'>Predicted payout</th>
+          <th width='50%' class='text-left'>Bitcoin Address</th>
+          <th width='12%' class='text-right'>Hashrate</th>
+          <th width='12%' class='text-right'>DOA Hashrate</th>
+          <th width='12%' class='text-right'>DOA %</th>
+          <th width='14%' class='text-right'>Predicted payout</th>
         </tr>
       </table>
+
+<!--
+      <h4>Pool Shares</h4>
+      <table id='recent_shares' class="table table-hover">
+        <tr>
+          <th width='50%' class='text-left'>Date/Time</th>
+          <th width='15%' class='text-right'>Number</th>
+          <th width='15%' class='text-right'>Hash</th>
+          <th width='20%' class='text-right'>Confirmations</th>
+        </tr>
+      </table>
+ -->
 
       <h4>Recent blocks</h4>
       <table id='recent_blocks' class="table table-hover">
@@ -157,8 +173,22 @@
           <th>Confirmations</th>
         </tr>
       </table>
-
     </div> <!-- /container -->
+
+    <div id='footer'>
+      <div class='container'>
+        <hr>
+        <p class='text-center'>
+          Interface by johndoe75
+          &dash;
+          <a href="https://github.com/johndoe75/p2pool-node-status.git">https://github.com/johndoe75/p2pool-node-status.git</a>
+        </p>
+        <p class='text-center'>
+          Donate some coins, if you like it <code>1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe</code>
+          (<i class='fa fa-btc'></i>) or <code>LSRfZJf75MtwzrbAUfQgqzdK4hHpY4oMW3</code> (LTC)
+        </p>
+      </div>
+    </div>
     <script type="text/javascript">
 
     $(document).ready(function() {
@@ -169,12 +199,39 @@
 
     var myself= [ ];
 
+    // the PHP JSONP handler for remote query
+
+    var jsonp='./jsonp.php?callback=?';
+
+    // if this dashboard shall run a different server than the
+    // p2pool, the JSONP handler must be used.  Set the hostname
+    // and port of the p2pool for remote query.
+    //
+    // If it's running in web-static of your p2pool, leave this
+    // variable empty!
+    //
+    // http://<host>:<port>
+
+    var host= '';
+
+    var api_url= '';
+
     var currency, currency_info, rate, local_stats,
         global_stats, current_payouts, recent_blocks;
     var local_hashrate= 0, local_doa_hashrate= 0;
 
+    // Check if we shall remotely connect to a p2pool running somewhere
+
+    if(host && host.length > 0) {
+      api_url= jsonp + '&host=' + encodeURI(host) + '&report=';
+      $('#node').removeClass('hidden').text(host);
+      $('#_node').removeClass('hidden');
+    }
+
     // ==================================================================
     // event handlers
+
+    // toggle hashrate chart
 
     $('#hour.hashrate').click(function(e) {
       fetchGraph('hour');
@@ -198,7 +255,9 @@
     // init
 
     $(document).on('init', function(e, eventInfo) {
-      fetchdata(); fetchBlocks(); fetchGraph('day');
+      fetchdata();
+      fetchBlocks(); /*fetchShares();*/
+      fetchGraph('day'); /*fetchPeers();*/
     });
 
     $(document).on('update', function(e, eventInfo) {
@@ -219,7 +278,8 @@
           tr.addClass('warning');
         }
 
-        link_icon= $('<i/>').attr('class', 'fa fa-external-link fa-fw');
+        address_span= $('<span/>').addClass('coin_address').text(address);
+        link_icon= $('<i/>').addClass('fa fa-external-link fa-fw');
         blockinfo= $('<a/>')
           .attr('href', currency_info.address_explorer_url_prefix + address)
           .attr('target', '_blank').append(link_icon);
@@ -230,13 +290,16 @@
         local_hashrate+= hashrate;
         local_doa_hashrate+= doa;
 
-        tr.append($('<td/>').attr('class', 'text-left')
-          .html(address + '&nbsp;').append(blockinfo));
-        tr.append($('<td/>').attr('class', 'text-right')
+        tr.append($('<td/>').addClass('text-left')
+          .append(address_span)
+          .append('&nbsp;')
+          //.append(chart_icon)
+          .append(blockinfo));
+        tr.append($('<td/>').addClass('text-right')
           .append(formatHashrate(hashrate)));
-        tr.append($('<td/>').attr('class', 'text-right')
+        tr.append($('<td/>').addClass('text-right')
           .append(formatHashrate(doa)));
-        tr.append($('<td/>').attr('class', 'text-right')
+        tr.append($('<td/>').addClass('text-right')
           .append(doa_prop.toFixed(2) + '%'));
 
         payout= current_payouts[address];
@@ -341,8 +404,26 @@
       });
     });
 
-    // Places the currency this node is mining in the page header.  If it's
-    // Bitcoin, use the fontawesome BTC icon.
+    $(document).on('update_shares', function(e, eventInfo) {
+      $.each(recent_blocks, function(key, block) {
+        ts= block.ts; num= block.number; hash= block.hash;
+
+        // link to blockchain.info for the given hash
+        blockinfo= $('<a/>')
+          .attr('href', currency_info.block_explorer_url_prefix + hash)
+          .attr('target', '_blank').text(hash);
+
+        tr= $('<tr/>').attr('id', num);
+        tr.append($('<td/>').append($.format.prettyDate(new Date(ts * 1000))));
+        tr.append($('<td/>').append(num));
+        tr.append($('<td/>').append(blockinfo));
+        tr.append($('<td/>').html('&dash;'));
+        $('#recent_blocks').append(tr);
+      });
+    });
+
+    // Place the currency symbol for the currency the node is mining.  If
+    // it's Bitcoin, use the fontawesome BTC icon
 
     var set_currency_symbol= true;
     $(document).on('update_currency', function(e, eventInfo) {
@@ -369,20 +450,20 @@
     // ==================================================================
 
     var fetchdata= function() {
-      $.getJSON('/rate', function(data) {
+      $.getJSON(api_url + '/rate', function(data) {
         if(data) rate= data;
 
-        $.getJSON('/web/currency_info', function(data) {
+        $.getJSON(api_url + '/web/currency_info', function(data) {
           currency_info= data;
           $(document).trigger('update_currency');
 
-          $.getJSON('/local_stats', function(data) {
+          $.getJSON(api_url + '/local_stats', function(data) {
             if(data) local_stats= data;
 
-            $.getJSON('/current_payouts', function(data) {
+            $.getJSON(api_url + '/current_payouts', function(data) {
               if(data) current_payouts= data;
 
-              $.getJSON('/global_stats', function(data) {
+              $.getJSON(api_url + '/global_stats', function(data) {
                 if(data) global_stats= data;
                 $(document).trigger('update_miners');
                 $(document).trigger('update_time');
@@ -394,9 +475,10 @@
     };
 
     var fetchBlocks= function() {
-      $.getJSON('/web/currency_info', function(data) {
+      $.getJSON(api_url + '/web/currency_info', function(data) {
         currency_info= data;
-        $.getJSON('/recent_blocks', function(data) {
+        $.getJSON(api_url + '/recent_blocks', function(data) {
+          console.log(recent_blocks);
           if(data) recent_blocks= data;
           $(document).trigger('update_blocks');
         });
@@ -404,27 +486,28 @@
     }
 
     var fetchGraph= function(interval) {
-      console.log(interval);
       var graph_hashrate= [], graph_doa_hashrate= [];
 
-      $.getJSON('/web/graph_data/local_hash_rate/last_' + interval, function(data) {
+      $.getJSON(api_url + '/web/graph_data/local_hash_rate/last_' + interval
+        ,function(data) {
         $.each(data, function(key, value) {
           el= []; el.push(parseInt(value[0]) * 1000,
             parseFloat(value[1]));
           graph_hashrate.push(el);
         });
         graph_hashrate.sort();
-        $.getJSON('/web/graph_data/local_dead_hash_rate/last_' + interval, function(data) {
+        $.getJSON(api_url + '/web/graph_data/local_dead_hash_rate/last_' + interval
+          ,function(data) {
           $.each(data, function(key, value) {
             el= []; el.push(parseInt(value[0]) * 1000,
               parseFloat(value[1]));
             graph_doa_hashrate.push(el);
           });
           graph_doa_hashrate.sort();
-          draw(graph_hashrate, graph_doa_hashrate);
-        })
-      })
-    }
+          draw(graph_hashrate, graph_doa_hashrate, 'chart', 800);
+        });
+      });
+    };
 
     // Let the GitHub ribbon fade out and be removed after 5 seconds.
 
@@ -437,6 +520,11 @@
     setInterval(function() {
       $(document).trigger('update');
     }, 10 * 1000);
+    var reload_interval= 10; // seconds
+
+    setInterval(function() {
+      $(document).trigger('update');
+    }, reload_interval * 1000);
 
     </script>
   </body>
