@@ -144,11 +144,21 @@
       <h4>Active miners on this node</h4>
       <table id='active_miners' class="table table-hover">
         <tr>
-          <th class='text-left'>Bitcoin Address</th>
-          <th class='text-right'>Hashrate</th>
-          <th class='text-right'>DOA Hashrate</th>
-          <th class='text-right'>DOA %</th>
-          <th class='text-right'>Predicted payout</th>
+          <th width='50%' class='text-left'>Bitcoin Address</th>
+          <th width='12%' class='text-right'>Hashrate</th>
+          <th width='12%' class='text-right'>DOA Hashrate</th>
+          <th width='12%' class='text-right'>DOA %</th>
+          <th width='14%' class='text-right'>Predicted payout</th>
+        </tr>
+      </table>
+
+      <h4>Pool Shares</h4>
+      <table id='recent_blocks' class="table table-hover">
+        <tr>
+          <th width='50%' class='text-left'>Date/Time</th>
+          <th width='15%' class='text-right'>Number</th>
+          <th width='15%' class='text-right'>Hash</th>
+          <th width='20%' class='text-right'>Confirmations</th>
         </tr>
       </table>
 
@@ -161,25 +171,7 @@
           <th>Confirmations</th>
         </tr>
       </table>
-
     </div> <!-- /container -->
-
-    <!-- Chart modal dialog -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title" id="myModalLabel"></h4>
-          </div>
-          <div class="modal-body"><div id='miner_chart' data-highcharts-chart='3'></div></div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          </div>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
-
 
     <div id='footer'>
       <div class='container'>
@@ -218,13 +210,15 @@
     //
     // http://<host>:<port>
 
-    var host= 'http://p2pool.tr2-it.de:9332';
+    var host= 'http://swillux.swill.org:9332';
 
     var api_url= '';
 
     var currency, currency_info, rate, local_stats,
         global_stats, current_payouts, recent_blocks;
     var local_hashrate= 0, local_doa_hashrate= 0;
+
+    // Check if we shall remotely connect to a p2pool running somewhere
 
     if(host && host.length > 0) {
       api_url= jsonp + '&host=' + encodeURI(host) + '&report=';
@@ -253,41 +247,13 @@
       fetchGraph('year');
     });
 
-    $('body').on('click', 'i.chart_modal', function(e) {
-      graph_hashrate= [], graph_doa_hashrate= [];
-
-      address= $(this).parent().find('span.coin_address').text();
-      $('#myModalLabel').text(address);
-      $('#myModal').modal('show');
-
-      interval= 'day';
-      $.getJSON(api_url + '/web/graph_data/local_hash_rate/last_' + interval, function(data) {
-        $.each(data, function(key, value) {
-          el= []; el.push(parseInt(value[0]) * 1000,
-            parseFloat(value[1]));
-          graph_hashrate.push(el);
-        });
-        graph_hashrate.sort();
-        $.getJSON(api_url + '/web/graph_data/local_dead_hash_rate/last_' + interval, function(data) {
-          $.each(data, function(key, value) {
-            el= []; el.push(parseInt(value[0]) * 1000,
-              parseFloat(value[1]));
-            graph_doa_hashrate.push(el);
-          });
-          graph_doa_hashrate.sort();
-          draw(graph_hashrate, graph_doa_hashrate, 'miner_chart');
-        });
-      });
-
-    });
-
     // ==================================================================
     // custom event handlers
 
     // init
 
     $(document).on('init', function(e, eventInfo) {
-      fetchdata(); fetchBlocks(); fetchGraph('day');
+      fetchdata(); fetchBlocks(); fetchGraph('day'); fetchPeers();
     });
 
     $(document).on('update', function(e, eventInfo) {
@@ -309,7 +275,6 @@
         }
 
         address_span= $('<span/>').addClass('coin_address').text(address);
-        chart_icon= $('<i/>').addClass('fa fa-bar-chart-o fa-fw chart_modal');
         link_icon= $('<i/>').addClass('fa fa-external-link fa-fw');
         blockinfo= $('<a/>')
           .attr('href', currency_info.address_explorer_url_prefix + address)
@@ -324,7 +289,6 @@
         tr.append($('<td/>').addClass('text-left')
           .append(address_span)
           .append('&nbsp;')
-          .append(chart_icon)
           .append(blockinfo));
         tr.append($('<td/>').addClass('text-right')
           .append(formatHashrate(hashrate)));
@@ -435,8 +399,8 @@
       });
     });
 
-    // Places the currency this node is mining in the page header.  If it's
-    // Bitcoin, use the fontawesome BTC icon.
+    // Place the currency symbol for the currency the node is mining.  If
+    // it's Bitcoin, use the fontawesome BTC icon
 
     var set_currency_symbol= true;
     $(document).on('update_currency', function(e, eventInfo) {
@@ -500,24 +464,26 @@
     var fetchGraph= function(interval) {
       var graph_hashrate= [], graph_doa_hashrate= [];
 
-      $.getJSON(api_url + '/web/graph_data/local_hash_rate/last_' + interval, function(data) {
+      $.getJSON(api_url + '/web/graph_data/local_hash_rate/last_' + interval
+        ,function(data) {
         $.each(data, function(key, value) {
           el= []; el.push(parseInt(value[0]) * 1000,
             parseFloat(value[1]));
           graph_hashrate.push(el);
         });
         graph_hashrate.sort();
-        $.getJSON(api_url + '/web/graph_data/local_dead_hash_rate/last_' + interval, function(data) {
+        $.getJSON(api_url + '/web/graph_data/local_dead_hash_rate/last_' + interval
+          ,function(data) {
           $.each(data, function(key, value) {
             el= []; el.push(parseInt(value[0]) * 1000,
               parseFloat(value[1]));
             graph_doa_hashrate.push(el);
           });
           graph_doa_hashrate.sort();
-          draw(graph_hashrate, graph_doa_hashrate, 'chart');
+          draw(graph_hashrate, graph_doa_hashrate, 'chart', 800);
         });
       });
-    }
+    };
 
     // Let the GitHub ribbon fade out and be removed after 5 seconds.
 
@@ -527,7 +493,7 @@
       });
     }, 10 * 1000);
 
-    var reload_interval= 20; // seconds
+    var reload_interval= 10; // seconds
 
     setInterval(function() {
       $(document).trigger('update');
