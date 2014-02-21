@@ -5,40 +5,101 @@ An alternative clean p2pool node dashboard. It uses Bootstrap, jQuery and Highch
 
 ## Installation
 
-To run this dashboard in parallel to your current p2pool web interface, do in your web-static directory:
+### Parallel to the default web-static
 
-```
+To run this UI in parallel to your current p2pool web interface, do in your web-static directory:
+
+``` Bash
 git clone https://github.com/johndoe75/p2pool-node-status.git
 ```
 
-If you want to use it as replacement for your current web-static, then do in the top directory of your p2pool installation
+You can then access the UI per `http://<url-to-your-p2pool>:<port>/static/p2pool-node-status/`
 
-```
+### As web-static replacement
+
+To replace your current web-static, do in the top directory of your p2pool installation
+
+``` Bash
 mv web-static _web-static-pre
 git clone https://github.com/johndoe75/p2pool-node-status.git web-static
 ```
 
-### Use a different host
+and access as usually per `http://<url-to-your-p2pool>:<port>/static`
 
-You can run this interface on a different host than your p2pool node.  To do so you need to configure the API address of your p2pool server.  For this set the variable `host` in index.html appropriately.  E.g.:
+### On a different host
 
+This UI can be run on a different web server as well.  The web server must than provide at least PHP in order to execute the JSONP handler.
+
+You need to configure the host and port of your p2pool server in the config.json like
+
+``` JSON
+var config = {
+  myself : [],
+  host : "http://p2pool.org:9332",
+  reload_interval : 30
+}
 ```
-var host= 'http://p2pool.org:9332';
-```
 
-In order to run this UI like this, the node the UI is running on must have PHP available.  This is required due to a required JSONP handler.
+**Beware**:  The UI queries the p2pool API periodically.  This will put additional network traffic on your p2pool server.  It can, but must not, result in a higher variance!
 
-Beware:  This will put network traffic on your p2pool node just for periodically fetching stats from p2pool API!  It can, but must not, result in a higher variance!
+## Configuration
+
+The `config.json` is found in `js` directory.
 
 ### Highlight your own miner address
 
 If you want your miner address highlighted, adjust `myself` variable accordingly. E. g.
 
 ``` JavaScript
-var myself= [
-  '1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe'
-];
+var config = {
+  myself : [
+    "1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe",
+    "1MsuC6knLeZKHCyQ39Xcw1qcgScS1ZK5R"
+  ],
+  host : "",
+  reload_interval : 30
+}
 ```
+
+### Point the UI to a different p2pool server
+
+
+You need to configure the host and port of your p2pool server in the `host` variable like
+
+``` JSON
+var config = {
+  myself : [],
+  host : "http://p2pool.org:9332",
+  reload_interval : 30
+}
+```
+
+### Adjust the reload interval
+
+Per default the UI updates the miner list and server stats every 30 seconds.  You can adjust the `reload_interval` variable like
+
+``` JSON
+var config = {
+  myself : [],
+  host : "",
+  reload_interval : 20
+}
+```
+
+to set it to 20 seconds for example.  **Beware** that each API query puts network and CPU load on your p2pool installation.  Avoid decreasing this value too much.  In my tests, 20 to 30 seconds seem to be fair enough.
+
+
+## Roadmap
+
+- Auto update the graph on each reload.
+
+- Replace HighCharts by another graph lib which can still be used on nodes having a fee (nodes considered as commercial)
+
+- Add section for recent shares and share tree in network
+
+- More graphs for the p2pool node
+
+- …
 
 …
 
@@ -50,16 +111,16 @@ Alexander Zschach <alex@zschach.net>
 
 If you like this tool, find it useful or if you just find it useful, that people out there writing free software for everybody to use or contribute, please donate some coins:
 
-Bitcoins 1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe   
-Litecoins LSRfZJf75MtwzrbAUfQgqzdK4hHpY4oMW3   
-Terracoins 1MsuC6knLeZKHCyQ39Xcw1qcgScS1ZK5R   
-Feathercoins 6tfEE48qk8Kgs9ancC82Y2iQBSX3VGYXfL
+Bitcoins 1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe  
+Litecoins LSRfZJf75MtwzrbAUfQgqzdK4hHpY4oMW3  
+Terracoins 1MsuC6knLeZKHCyQ39Xcw1qcgScS1ZK5R  
+Feathercoins 6tfEE48qk8Kgs9ancC82Y2iQBSX3VGYXfL  
 
 ### License
 
 The MIT License (MIT)
 
-Copyright (c) 2013 Alexander Zschach alex@zschach.net
+Copyright (c) 2013-2014 Alexander Zschach alex@zschach.net
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
