@@ -32,7 +32,7 @@ This UI can be run on a different web server as well.  The web server must than 
 
 You need to configure the host and port of your p2pool server in the config.json like
 
-``` JSON
+``` JavaScript
 var config = {
   myself : [],
   host : "http://p2pool.org:9332",
@@ -66,7 +66,7 @@ var config = {
 
 You need to configure the host and port of your p2pool server in the `host` variable like
 
-``` JSON
+``` JavaScript
 var config = {
   myself : [],
   host : "http://p2pool.org:9332",
@@ -78,7 +78,7 @@ var config = {
 
 Per default the UI updates the miner list and server stats every 30 seconds.  You can adjust the `reload_interval` variable like
 
-``` JSON
+``` JavaScript
 var config = {
   myself : [],
   host : "",
