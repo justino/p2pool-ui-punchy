@@ -201,6 +201,10 @@
         global_stats, current_payouts, recent_blocks;
     var local_hashrate= 0, local_doa_hashrate= 0;
 
+    var jsonp= "./jsonp.php?callback=?";
+
+    var api_url= "";
+
     // Check if we shall remotely connect to a p2pool running somewhere
 
     if(config.host && config.host.length > 0) {
@@ -498,11 +502,9 @@
       });
     }, 10 * 1000);
 
-    var reload_interval= 10; // seconds
-
     setInterval(function() {
       $(document).trigger('update');
-    }, reload_interval * 1000);
+    }, config.reload_interval * 1000);
 
     </script>
   </body>

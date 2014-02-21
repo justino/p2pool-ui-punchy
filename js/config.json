@@ -1,5 +1,6 @@
 var config = {
   myself : [
   ],
-  host : ""
+  host : "",
+  reload_interval : 30
 }
