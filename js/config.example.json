@@ -1,0 +1,8 @@
+var config = {
+  myself : [
+    ""
+  ],
+  jsonp : "./jsonp.php?callback=?",
+  host : "",
+  api_url : ""
+}
