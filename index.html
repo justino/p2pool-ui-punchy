@@ -28,6 +28,8 @@
     <script src="js/util.js"></script>
     <script src="js/charts.js"></script>
 
+    <script src="js/config.json"></script>
+
     <!-- Custom styles for this template -->
     <link href="grid.css" rel="stylesheet">
 
@@ -92,52 +94,52 @@
       <h4>Status</h4>
       <table id='status' class="table table-hover" border='0'>
         <tr>
-          <td width='25%'>Local rate:</td>
-          <td width='25%' class='text-right'><span id='local_rate'></span></td>
-          <td width='25%'>Shares:</td>
-          <td width='25%' class='text-right'><span id='shares'></span></td>
+          <td width='19%'>Local rate:</td>
+          <td width='31%' class='text-right'><span id='local_rate'></span></td>
+          <td width='19%'>Shares:</td>
+          <td width='31%' class='text-right'><span id='shares'></span></td>
         </tr>
         <tr>
-          <td width='25%'>Global pool rate:</td>
-          <td width='25%' class='text-right'><span id='global_rate'></span></td>
-          <td width='25%'>Share difficulty:</td>
-          <td width='25%' class='text-right'><span id='share_difficulty'></span></td>
+          <td width='19%'>Global pool rate:</td>
+          <td width='31%' class='text-right'><span id='global_rate'></span></td>
+          <td width='19%'>Share difficulty:</td>
+          <td width='31%' class='text-right'><span id='share_difficulty'></span></td>
         </tr>
         <tr>
-          <td width='25%'>Current block value:</td>
-          <td width='25%' class='text-right'><span id='block_value'></span></td>
-          <td width='25%'>Expected time to share:</td>
-          <td width='25%' class='text-right'><span id='expected_time_to_share'></span></td>
+          <td width='19%'>Current block value:</td>
+          <td width='31%' class='text-right'><span id='block_value'></span></td>
+          <td width='19%'>Expected time to share:</td>
+          <td width='31%' class='text-right'><span id='expected_time_to_share'></span></td>
         </tr>
         <tr>
-          <td width='25%'>Payout if a block were found NOW:</td>
-          <td width='25%' class='text-right'><span id='payout_now'></span></td>
-          <td width='25%'>Expected time to block:</td>
-          <td width='25%' class='text-right'><span id='expected_time_to_block'></span></td>
+          <td width='19%'>Payout if a block were found NOW:</td>
+          <td width='31%' class='text-right'><span id='payout_now'></span></td>
+          <td width='19%'>Expected time to block:</td>
+          <td width='31%' class='text-right'><span id='expected_time_to_block'></span></td>
         </tr>
         <tr>
-          <td width='25%'>Node peers:</td>
-          <td width='25%' class='text-right'>
+          <td width='19%'>Node peers:</td>
+          <td width='31%' class='text-right'>
             <i class='fa fa-sign-in fa-fw'></i>
             <span id='peers_in'></span>
             /
             <i class='fa fa-sign-out fa-fw'></i>
             <span id='peers_out'></span>
           </td>
-          <td width='25%'>Node uptime:</td>
-          <td width='25%' class='text-right'><span id='node_uptime'></span></td>
+          <td width='19%'>Node uptime:</td>
+          <td width='31%' class='text-right'><span id='node_uptime'></span></td>
         </tr>
         <tr>
-          <td width='25%'>Node p2pool version:</td>
-          <td width='25%' class='text-right'><span id='p2pool_version'></span></td>
-          <td width='25%'>Protocol version:</td>
-          <td width='25%' class='text-right'><span id='protocol_version'></span></td>
+          <td width='19%'>Node p2pool version:</td>
+          <td width='31%' class='text-right'><span id='p2pool_version'></span></td>
+          <td width='19%'>Protocol version:</td>
+          <td width='31%' class='text-right'><span id='protocol_version'></span></td>
         </tr>
         <tr>
-          <td width='25%'>Node fee:</td>
-          <td width='25%' class='text-right'><span id='node_fee'></span></td>
-          <td width='25%'>Node donation:</td>
-          <td width='25%' class='text-right'><span id='node_donation'></span></td>
+          <td width='19%'>Node fee:</td>
+          <td width='31%' class='text-right'><span id='node_fee'></span></td>
+          <td width='19%'>Node donation:</td>
+          <td width='31%' class='text-right'><span id='node_donation'></span></td>
         </tr>
       </table>
 
@@ -195,36 +197,19 @@
       $(document).trigger('init');
     });
 
-    // array defining my addresses for highlighting them
-
-    var myself= ['1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe'];
-
-    // the PHP JSONP handler for remote query
-
-    var jsonp='./jsonp.php?callback=?';
-
-    // if this dashboard shall run a different server than the
-    // p2pool, the JSONP handler must be used.  Set the hostname
-    // and port of the p2pool for remote query.
-    //
-    // If it's running in web-static of your p2pool, leave this
-    // variable empty!
-    //
-    // http://<host>:<port>
-
-    var host= 'http://p2pool.org:9322';
-
-    var api_url= '';
-
     var currency, currency_info, rate, local_stats,
         global_stats, current_payouts, recent_blocks;
     var local_hashrate= 0, local_doa_hashrate= 0;
 
+    var jsonp= "./jsonp.php?callback=?";
+
+    var api_url= "";
+
     // Check if we shall remotely connect to a p2pool running somewhere
 
-    if(host && host.length > 0) {
-      api_url= jsonp + '&host=' + encodeURI(host) + '&report=';
-      $('#node').removeClass('hidden').text(host);
+    if(config.host && config.host.length > 0) {
+      api_url= jsonp + '&host=' + encodeURI(config.host) + '&report=';
+      $('#node').removeClass('hidden').text(config.host);
       $('#_node').removeClass('hidden');
     }
 
@@ -274,7 +259,8 @@
         tr= $('<tr/>').attr('id', address);
 
         // highlight our miner if configured
-        if(myself && myself.length > 0 && $.inArray(address, myself) >= 0) {
+        if(config.myself && config.myself.length > 0 &&
+           $.inArray(address, config.myself) >= 0) {
           tr.addClass('warning');
         }
 
@@ -516,11 +502,9 @@
       });
     }, 10 * 1000);
 
-    var reload_interval= 10; // seconds
-
     setInterval(function() {
       $(document).trigger('update');
-    }, reload_interval * 1000);
+    }, config.reload_interval * 1000);
 
     </script>
   </body>
