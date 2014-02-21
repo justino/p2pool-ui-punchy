@@ -1,8 +1,7 @@
 var config = {
   myself : [
-    ""
+    "1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe",
+    "LSRfZJf75MtwzrbAUfQgqzdK4hHpY4oMW3"
   ],
-  jsonp : "./jsonp.php?callback=?",
-  host : "",
-  api_url : ""
+  host : "http://localhost:8888"
 }
