@@ -208,7 +208,7 @@
     // Check if we shall remotely connect to a p2pool running somewhere
 
     if(config.host && config.host.length > 0) {
-      api_url= config.jsonp + '&host=' + encodeURI(config.host) + '&report=';
+      api_url= jsonp + '&host=' + encodeURI(config.host) + '&report=';
       $('#node').removeClass('hidden').text(config.host);
       $('#_node').removeClass('hidden');
     }
