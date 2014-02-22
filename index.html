@@ -198,7 +198,8 @@
     });
 
     var currency, currency_info, rate, local_stats,
-        global_stats, current_payouts, recent_blocks;
+        global_stats, current_payouts, recent_blocks,
+        payout_addr;
     var local_hashrate= 0, local_doa_hashrate= 0;
 
     var jsonp= "./jsonp.php?callback=?";
@@ -263,6 +264,14 @@
            $.inArray(address, config.myself) >= 0) {
           tr.addClass('warning');
         }
+
+        // highlight the pool's payout address
+        payout_addr in current_payouts ?
+          $('#payout_now')
+            .text(current_payouts[payout_addr])
+            .append(' ')
+            .append(currency.clone()) :
+          $('#payout_now').html('&dash');
 
         address_span= $('<span/>').addClass('coin_address').text(address);
         link_icon= $('<i/>').addClass('fa fa-external-link fa-fw');
@@ -378,8 +387,6 @@
         (parseInt(local_stats.attempts_to_block) / parseInt(global_stats.pool_hash_rate))
           || 0;
       $('#expected_time_to_block').text((''+time_to_block).formatSeconds());
-
-      $('#payout_now').html('&dash;');
     });
 
     // Fills the recent block table
@@ -461,10 +468,14 @@
             $.getJSON(api_url + '/current_payouts', function(data) {
               if(data) current_payouts= data;
 
-              $.getJSON(api_url + '/global_stats', function(data) {
-                if(data) global_stats= data;
-                $(document).trigger('update_miners');
-                $(document).trigger('update_time');
+              $.getJSON(api_url + '/payout_addr', function(data) {
+                if(data) payout_addr= data;
+
+                $.getJSON(api_url + '/global_stats', function(data) {
+                  if(data) global_stats= data;
+                  $(document).trigger('update_miners');
+                  $(document).trigger('update_time');
+                });
               });
             });
           });
