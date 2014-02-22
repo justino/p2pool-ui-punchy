@@ -4,5 +4,6 @@ var config = {
     "LSRfZJf75MtwzrbAUfQgqzdK4hHpY4oMW3"
   ],
   host : "http://localhost:8888",
-  reload_interval : 30
+  reload_interval : 30,
+  use_fontawesome: true
 }

@@ -2,5 +2,6 @@ var config = {
   myself : [
   ],
   host : "",
-  reload_interval : 30
+  reload_interval : 30,
+  use_fontawesome: true
 }

@@ -270,11 +270,11 @@
           .attr('href', currency_info.address_explorer_url_prefix + address)
           .attr('target', '_blank').append(link_icon);
 
-        doa= local_stats.miner_dead_hash_rates[address];
+        doa= local_stats.miner_dead_hash_rates[address] || 0;
         doa_prop= (parseFloat(doa) / parseFloat(hashrate)) * 100;
 
-        local_hashrate+= hashrate;
-        local_doa_hashrate+= doa;
+        local_hashrate+= hashrate || 0;
+        local_doa_hashrate+= doa  || 0;
 
         tr.append($('<td/>').addClass('text-left')
           .append(address_span)
@@ -288,7 +288,7 @@
         tr.append($('<td/>').addClass('text-right')
           .append(doa_prop.toFixed(2) + '%'));
 
-        payout= current_payouts[address];
+        payout= current_payouts[address] || 0;
 
         if(payout) {
           td= $('<td/>').attr('class', 'text-right')
@@ -303,14 +303,18 @@
         $('#'+address).remove(); $('#active_miners').append(tr);
       });
 
+      if(local_doa_hashrate !== 0 && local_hashrate !== 0) {
+        doa_rate= (local_doa_hashrate / local_hashrate) * 100;
+      } else { doa_rate= 0; }
+
       rate= formatHashrate(local_hashrate)
         + ' (DOA '
         + formatHashrate(local_doa_hashrate)
-        + ' / ' + ((local_doa_hashrate / local_hashrate) * 100).toFixed(2)
+        + ' / ' + doa_rate.toFixed(2)
         + '%)';
       $('#local_rate').text(rate);
 
-      global_doa_rate= global_stats.pool_hash_rate - global_stats.pool_nonstale_hash_rate;
+      global_doa_rate= (global_stats.pool_hash_rate - global_stats.pool_nonstale_hash_rate);
       global_rate= formatHashrate(global_stats.pool_hash_rate)
         + ' (DOA '
         + formatHashrate(global_doa_rate)
@@ -362,9 +366,17 @@
         + ' (Orphan: ' + local_stats.shares.orphan
         + ', Dead: ' + local_stats.shares.dead + ')');
 
-      time_to_share= parseInt(local_stats.attempts_to_share) / parseInt(local_hashrate);
-      $('#expected_time_to_share').text((''+time_to_share).formatSeconds());
-      time_to_block= parseInt(local_stats.attempts_to_block) / parseInt(global_stats.pool_hash_rate);
+      if(local_hashrate !== 0) {
+        time_to_share=
+          (parseInt(local_stats.attempts_to_share) / parseInt(local_hashrate));
+        $('#expected_time_to_share').text((''+time_to_share).formatSeconds());
+      } else {
+        $('#expected_time_to_share').html('&dash;');
+      }
+
+      time_to_block=
+        (parseInt(local_stats.attempts_to_block) / parseInt(global_stats.pool_hash_rate))
+          || 0;
       $('#expected_time_to_block').text((''+time_to_block).formatSeconds());
 
       $('#payout_now').html('&dash;');
@@ -413,7 +425,7 @@
 
     var set_currency_symbol= true;
     $(document).on('update_currency', function(e, eventInfo) {
-      if(currency_info.symbol === 'BTC') {
+      if(currency_info.symbol === 'BTC' && config.use_fontawesome) {
         // use fontawesome BTC symbol
         currency= $('<i/>').attr('class', 'fa fa-btc fa-fw');
       }
