@@ -36,7 +36,8 @@ You need to configure the host and port of your p2pool server in the config.json
 var config = {
   myself : [],
   host : "http://p2pool.org:9332",
-  reload_interval : 30
+  reload_interval : 30,
+  use_fontawesome : true
 }
 ```
 
@@ -57,7 +58,8 @@ var config = {
     "1MsuC6knLeZKHCyQ39Xcw1qcgScS1ZK5R"
   ],
   host : "",
-  reload_interval : 30
+  reload_interval : 30,
+  use_fontawesome : true
 }
 ```
 
@@ -70,7 +72,8 @@ You need to configure the host and port of your p2pool server in the `host` vari
 var config = {
   myself : [],
   host : "http://p2pool.org:9332",
-  reload_interval : 30
+  reload_interval : 30,
+  use_fontawesome : true
 }
 ```
 
@@ -82,16 +85,33 @@ Per default the UI updates the miner list and server stats every 30 seconds.  Yo
 var config = {
   myself : [],
   host : "",
-  reload_interval : 20
+  reload_interval : 20,
+  use_fontawesome : true
 }
 ```
 
 to set it to 20 seconds for example.  **Beware** that each API query puts network and CPU load on your p2pool installation.  Avoid decreasing this value too much.  In my tests, 20 to 30 seconds seem to be fair enough.
 
+### Disable Fontawesome Bitcoin icon
+
+On Bitcoin p2pools, this UI uses the Fontawesome Bitcoin icon per default.  This can be disabled per `use_fontawesome` configuration option.  Set it to false if don't want to use the bitcoin icon.
+
+``` JavaScript
+var config = {
+  myself : [],
+  host : "",
+  reload_interval : 30,
+  use_fontawesome : false
+}
+```
+
+If this variable is set to `false`, the UI displays the p2pool currency symbol (BTC).
+
+*This does only apply to Bitcoin pools.  On other cryptocurrencies, the UI displays whatever p2pool API replies as currency symbol.*
 
 ## Roadmap
 
-- Auto update the graph on each reload.
+- Auto update node graph.
 
 - Replace HighCharts by another graph lib which can still be used on nodes having a fee (nodes considered as commercial)
 
