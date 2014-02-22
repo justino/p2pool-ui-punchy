@@ -2,6 +2,9 @@ var config = {
   myself : [
   ],
   host : "",
+  // data reload interval in seconds
   reload_interval : 30,
+  // chart reload interval in seconds
+  reload_chart_interval : 600,
   use_fontawesome: true
 }
