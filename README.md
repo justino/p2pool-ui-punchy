@@ -37,6 +37,7 @@ var config = {
   myself : [],
   host : "http://p2pool.org:9332",
   reload_interval : 30,
+  reload_chart_interval : 600,
   use_fontawesome : true
 }
 ```
@@ -59,6 +60,7 @@ var config = {
   ],
   host : "",
   reload_interval : 30,
+  reload_chart_interval : 600,
   use_fontawesome : true
 }
 ```
@@ -73,6 +75,7 @@ var config = {
   myself : [],
   host : "http://p2pool.org:9332",
   reload_interval : 30,
+  reload_chart_interval : 600,
   use_fontawesome : true
 }
 ```
@@ -86,11 +89,16 @@ var config = {
   myself : [],
   host : "",
   reload_interval : 20,
+  reload_chart_interval : 1200,
   use_fontawesome : true
 }
 ```
 
-to set it to 20 seconds for example.  **Beware** that each API query puts network and CPU load on your p2pool installation.  Avoid decreasing this value too much.  In my tests, 20 to 30 seconds seem to be fair enough.
+to set it to 20 seconds for example.
+
+`reload_chart_interval` sets the amount of seconds until the hashrate graph is reloaded.  In above example, it's configured to 1200 seconds (20 minutes).
+
+**Beware** that each API query puts network and CPU load on your p2pool installation.  Avoid decreasing this value too much.  In my tests, 20 to 30 seconds seem to be fair enough.
 
 ### Disable Fontawesome Bitcoin icon
 
@@ -101,6 +109,7 @@ var config = {
   myself : [],
   host : "",
   reload_interval : 30,
+  reload_chart_interval : 600,
   use_fontawesome : false
 }
 ```
@@ -111,7 +120,7 @@ If this variable is set to `false`, the UI displays the p2pool currency symbol (
 
 ## Roadmap
 
-- Auto update node graph.
+- ~~Auto update node graph.~~
 
 - Replace HighCharts by another graph lib which can still be used on nodes having a fee (nodes considered as commercial)
 

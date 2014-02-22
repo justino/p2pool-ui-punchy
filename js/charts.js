@@ -1,5 +1,5 @@
-var draw= function(hashrate, doarate, renderTo) {
-  char= new Highcharts.Chart({
+var draw= function(hashrate, doarate, renderTo, interval) {
+  chart= new Highcharts.Chart({
     chart: {
       renderTo: renderTo,
       animation: true,
@@ -7,7 +7,7 @@ var draw= function(hashrate, doarate, renderTo) {
     },
     credits: { enabled: false },
     exporting: { enabled: false },
-    title: { text: 'Node Hash/DOA-Rate' },
+    title: { text: 'Hashrate/DOA rate (' + interval + ')' },
     xAxis: {
       type: 'datetime',
       maxZoom: 24 * 3600,

@@ -250,6 +250,13 @@
       fetchdata();
     });
 
+    $(document).on('update_graph', function(e, eventInfo) {
+      fetchBlocks();
+      console.log(chart.title.text);
+      graphPeriod= chart.title.text.match(/\((.+)\)/)[1] || 'day';
+      fetchGraph(graphPeriod);
+    });
+
     // Fills the list of active miners on this node.  I know, there are
     // zillions of people out there on p2pool.  But I'm typically only
     // interested to see, who is mining on my node.
@@ -512,7 +519,7 @@
             graph_doa_hashrate.push(el);
           });
           graph_doa_hashrate.sort();
-          draw(graph_hashrate, graph_doa_hashrate, 'chart', 800);
+          draw(graph_hashrate, graph_doa_hashrate, 'chart', interval);
         });
       });
     };
@@ -525,9 +532,17 @@
       });
     }, 10 * 1000);
 
+    // update tables and miner data
+
     setInterval(function() {
       $(document).trigger('update');
     }, config.reload_interval * 1000);
+
+    // update blocks and graph
+
+    setInterval(function() {
+      $(document).trigger('update_graph');
+    }, config.reload_chart_interval * 1000);
 
     </script>
   </body>
