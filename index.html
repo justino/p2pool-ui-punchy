@@ -54,7 +54,7 @@
   </head>
 
   <body>
-    <div id='ribbon'>
+    <div id='ribbon' style='display:none;'>
       <a href="https://github.com/johndoe75/p2pool-node-status">
         <img style="position: absolute; top: 0; right: 0; border: 0;" src="img/forkme_right_orange_ff7600.png" alt="Fork me on GitHub">
       </a>
@@ -194,6 +194,10 @@
     <script type="text/javascript">
 
     $(document).ready(function() {
+      // shall the Github ribbon been shown?
+      if(config.show_github_ribbon) { $('#ribbon').fadeIn(1000); }
+      else { $('#ribbon').remove(); }
+
       $(document).trigger('init');
     });
 
@@ -526,11 +530,13 @@
 
     // Let the GitHub ribbon fade out and be removed after 5 seconds.
 
-    setTimeout(function() {
-      $('#ribbon').fadeOut(1000, function() {
-        this.remove();
-      });
-    }, 10 * 1000);
+    if(config.show_github_ribbon) {
+      setTimeout(function() {
+        $('#ribbon').fadeOut(1000, function() {
+          this.remove();
+        });
+      }, 5 * 1000);
+    }
 
     // update tables and miner data
 
