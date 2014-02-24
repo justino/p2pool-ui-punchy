@@ -248,10 +248,10 @@
 
     $(document).on('update', function(e, eventInfo) {
       fetchdata();
+      fetchBlocks();
     });
 
     $(document).on('update_graph', function(e, eventInfo) {
-      fetchBlocks();
       console.log(chart.title.text);
       graphPeriod= chart.title.text.match(/\((.+)\)/)[1] || 'day';
       fetchGraph(graphPeriod);
@@ -412,7 +412,7 @@
         tr.append($('<td/>').append(num));
         tr.append($('<td/>').append(blockinfo));
         tr.append($('<td/>').html('&dash;'));
-        $('#recent_blocks').append(tr);
+        $('#'+num).remove(); $('#recent_blocks').append(tr);
       });
     });
 
