@@ -346,7 +346,7 @@
         .append(' ').append(currency.clone());
 
       $('#node_donation')
-        .text(local_stats.donation_proportion + '%');
+        .text((local_stats.donation_proportion * 100) + '%');
       $('#node_fee')
         .text(local_stats.fee + '%');
       $('#p2pool_version')
