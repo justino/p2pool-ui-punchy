@@ -60,6 +60,8 @@
       </a>
     </div>
 
+    <div id="navbar"></div>
+
     <div class="container">
       <div class="page-header">
         <h1>p2pool <span id='currency'></span> &dash; node dashboard</h1>
@@ -195,6 +197,9 @@
 
     $(document).ready(function() {
       $(document).trigger('init');
+      if(config.navbar_url && config.navbar_url.length > 0) {
+        $("#navbar").load(config.navbar_url);
+      }
     });
 
     var currency, currency_info, rate, local_stats,

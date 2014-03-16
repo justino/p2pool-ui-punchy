@@ -8,5 +8,7 @@ var config = {
   reload_interval : 30,
   // chart reload interval in seconds
   reload_chart_interval : 600,
-  use_fontawesome: true
+  use_fontawesome: true,
+  // HTML to load at top of page
+  navbar_url : ""
 }
