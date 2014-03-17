@@ -10,13 +10,13 @@
 
     <title>p2pool - node stats</title>
 
-    <link href="http://fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,100,100italic,500,500italic,700,700italic,900,900italic" rel="stylesheet" type="text/css">
-    <link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400italic,700italic,400,700' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,100,100italic,500,500italic,700,700italic,900,900italic" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Condensed:400italic,700italic,400,700' rel='stylesheet' type='text/css'>
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 
     <script src="js/jquery-2.0.3.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
@@ -59,6 +59,8 @@
         <img style="position: absolute; top: 0; right: 0; border: 0;" src="img/forkme_right_orange_ff7600.png" alt="Fork me on GitHub">
       </a>
     </div>
+
+    <div id="navbar"></div>
 
     <div class="container">
       <div class="page-header">
@@ -199,6 +201,9 @@
       else { $('#ribbon').remove(); }
 
       $(document).trigger('init');
+      if(config.navbar_url && config.navbar_url.length > 0) {
+        $("#navbar").load(config.navbar_url);
+      }
     });
 
     var currency, currency_info, rate, local_stats,
@@ -282,7 +287,7 @@
             .text(current_payouts[payout_addr])
             .append(' ')
             .append(currency.clone()) :
-          $('#payout_now').html('&dash');
+          $('#payout_now').html('&dash;');
 
         address_span= $('<span/>').addClass('coin_address').text(address);
         link_icon= $('<i/>').addClass('fa fa-external-link fa-fw');
