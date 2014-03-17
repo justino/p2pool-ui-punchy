@@ -334,11 +334,16 @@
         + '%)';
       $('#local_rate').text(rate);
 
-      global_doa_rate= (global_stats.pool_hash_rate - global_stats.pool_nonstale_hash_rate);
-      global_rate= formatHashrate(global_stats.pool_hash_rate)
+      pool_hash_rate=
+        parseInt(global_stats.pool_hash_rate || 0);
+      pool_nonstale_hash_rate=
+        parseInt(global_stats.pool_nonstale_hash_rate || 0);
+      global_doa_rate= pool_hash_rate - pool_nonstale_hash_rate;
+
+      global_rate= formatHashrate(pool_hash_rate)
         + ' (DOA '
         + formatHashrate(global_doa_rate)
-        + ' / ' + ((global_doa_rate / global_stats.pool_hash_rate) * 100).toFixed(2)
+        + ' / ' + ((global_doa_rate / pool_hash_rate) * 100).toFixed(2)
         + '%)';
       $('#global_rate').text(global_rate);
 
@@ -394,9 +399,9 @@
         $('#expected_time_to_share').html('&dash;');
       }
 
-      time_to_block=
-        (parseInt(local_stats.attempts_to_block) / parseInt(global_stats.pool_hash_rate))
-          || 0;
+      attempts_to_block=
+        parseInt(local_stats.attempts_to_block || 0);
+      time_to_block= attempts_to_block / pool_hash_rate;
       $('#expected_time_to_block').text((''+time_to_block).formatSeconds());
     });
 
@@ -412,7 +417,8 @@
           .attr('target', '_blank').text(hash);
 
         tr= $('<tr/>').attr('id', num);
-        tr.append($('<td/>').append($.format.prettyDate(new Date(ts * 1000))));
+        tr.append($('<td/>')
+          .append($.format.prettyDate(new Date(ts * 1000))));
         tr.append($('<td/>').append(num));
         tr.append($('<td/>').append(blockinfo));
         tr.append($('<td/>').html('&dash;'));
@@ -430,10 +436,14 @@
           .attr('target', '_blank').text(hash);
 
         tr= $('<tr/>').attr('id', num);
-        tr.append($('<td/>').append($.format.prettyDate(new Date(ts * 1000))));
-        tr.append($('<td/>').append(num));
-        tr.append($('<td/>').append(blockinfo));
-        tr.append($('<td/>').html('&dash;'));
+        tr.append($('<td/>')
+          .append($.format.prettyDate(new Date(ts * 1000))));
+        tr.append($('<td/>')
+          .append(num));
+        tr.append($('<td/>')
+          .append(blockinfo));
+        tr.append($('<td/>')
+          .html('&dash;'));
         $('#recent_blocks').append(tr);
       });
     });
