@@ -14,7 +14,7 @@ Features:
 See Screenshots:
 
 ![Main UI](/img/screenshot.png?raw=true "Main UI")
-![with Graph](/img/screenshot-graph?raw=true "with Graph")
+![with Graph](/img/screenshot-graph.png?raw=true "with Graph")
 
 ## Installation
 
