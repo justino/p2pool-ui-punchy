@@ -1,7 +1,15 @@
-p2pool-node-status
+p2pool-ui-punchy
 ==================
 
-An alternative clean p2pool node dashboard. It uses Bootstrap, jQuery and Highcharts.
+Another alternative p2pool UI.
+Makes use of Bootstrap, jQuery and Highcharts.
+
+Features:
+- Important information at the top of the page
+- Mobile friendly
+- Each user can highlight their own miners through configuration stored on the local client
+- Change themes with the click of a button
+- Chart indicates when blocks are found (merged from https://github.com/roy7/p2pool-node-status)
 
 ## Installation
 
@@ -10,35 +18,35 @@ An alternative clean p2pool node dashboard. It uses Bootstrap, jQuery and Highch
 To run this UI in parallel to your current p2pool web interface, do in your web-static directory:
 
 ``` Bash
-git clone https://github.com/johndoe75/p2pool-node-status.git
+git clone https://github.com/justino/p2pool-ui-punchy.git
 ```
 
-You can then access the UI per `http://<url-to-your-p2pool>:<port>/static/p2pool-node-status/`
+You can then access the UI per `http://<url-to-your-p2pool>:<port>/static/p2pool-ui-punchy/`
 
 ### As web-static replacement
 
-To replace your current web-static, do in the top directory of your p2pool installation
+To replace your current web-static, in the top directory of your p2pool installation:
 
 ``` Bash
-mv web-static _web-static-pre
-git clone https://github.com/johndoe75/p2pool-node-status.git web-static
+mv web-static web-static-original
+git clone https://github.com/justino/p2pool-ui-punchy.git
+ln -s p2pool-ui-punchy web-static
 ```
 
-and access as usually per `http://<url-to-your-p2pool>:<port>/static`
+and access normally: `http://<url-to-your-p2pool>:<port>/static`
 
 ### On a different host
 
-This UI can be run on a different web server as well.  The web server must than provide at least PHP in order to execute the JSONP handler.
+This UI can be run on a different web server as well.  The web server must then provide at least PHP in order to execute the JSONP handler.
 
 You need to configure the host and port of your p2pool server in the config.json like
 
 ``` JavaScript
 var config = {
-  myself : [],
-  host : "http://p2pool.org:9332",
-  reload_interval : 30,
-  reload_chart_interval : 600,
-  use_fontawesome : true
+    myself : [],
+    host : "http://p2pool.org:9332",
+    reload_interval : 30,
+    reload_chart_interval : 600
 }
 ```
 
@@ -48,20 +56,19 @@ var config = {
 
 The `config.json` is found in `js` directory.
 
-### Highlight your own miner address
+### Highlight the pool owners addresses.
 
-If you want your miner address highlighted, adjust `myself` variable accordingly. E. g.
+If you want your miner address highlighted, adjust `myself` variable accordingly. E.g.
 
 ``` JavaScript
 var config = {
-  myself : [
-    "1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe",
-    "1MsuC6knLeZKHCyQ39Xcw1qcgScS1ZK5R"
-  ],
-  host : "",
-  reload_interval : 30,
-  reload_chart_interval : 600,
-  use_fontawesome : true
+    myself : [
+        "195ufic8mfNrDqxgFCfmw5mQYwdu2im9G5",
+        "1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe"
+    ],
+    host : "",
+    reload_interval : 30,
+    reload_chart_interval : 600
 }
 ```
 
@@ -100,50 +107,39 @@ to set it to 20 seconds for example.
 
 **Beware** that each API query puts network and CPU load on your p2pool installation.  Avoid decreasing this value too much.  In my tests, 20 to 30 seconds seem to be fair enough.
 
-### Disable Fontawesome Bitcoin icon
-
-On Bitcoin p2pools, this UI uses the Fontawesome Bitcoin icon per default.  This can be disabled per `use_fontawesome` configuration option.  Set it to false if don't want to use the bitcoin icon.
-
-``` JavaScript
-var config = {
-  myself : [],
-  host : "",
-  reload_interval : 30,
-  reload_chart_interval : 600,
-  use_fontawesome : false
-}
-```
-
-If this variable is set to `false`, the UI displays the p2pool currency symbol (BTC).
-
-*This does only apply to Bitcoin pools.  On other cryptocurrencies, the UI displays whatever p2pool API replies as currency symbol.*
-
 ## Roadmap
 
-- ~~Auto update node graph.~~
-
-- Replace HighCharts by another graph lib which can still be used on nodes having a fee (nodes considered as commercial)
+- Replace HighCharts with another graph lib which can still be used on nodes having a fee (nodes considered as commercial)
 
 - Add section for recent shares and share tree in network
 
 - More graphs for the p2pool node
 
-- …
-
-…
+- Individual address page with individual stats (more like tradition central pools, MPOS dashboard view)
 
 ## Credits & License
 
+Justin La Sotten <>
+
+Original Code forked from https://github.com/johndoe75/p2pool-node-status
 Alexander Zschach <alex@zschach.net>
 
 ### Donate
 
-If you like this tool, find it useful or if you just find it useful, that people out there writing free software for everybody to use or contribute, please donate some coins:
+If you like this UI, find it useful, or like that people out there are writing free software for everybody to use or contribute, please donate some coins:
 
-Bitcoins 1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe  
-Litecoins LSRfZJf75MtwzrbAUfQgqzdK4hHpY4oMW3  
-Terracoins 1MsuC6knLeZKHCyQ39Xcw1qcgScS1ZK5R  
-Feathercoins 6tfEE48qk8Kgs9ancC82Y2iQBSX3VGYXfL  
+Bitcoin: 195ufic8mfNrDqxgFCfmw5mQYwdu2im9G5
+Litecoin: LKs7z33st7PcnB28SMQhvCpawYapTm3HxC
+Vertcoin: VcoAm4gEg5vLmJ4NfRwaVkv8UWEPTXMTRC
+
+or
+
+If you would like to donate to the original developer:
+
+Bitcoin: 1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe
+Litecoin: LSRfZJf75MtwzrbAUfQgqzdK4hHpY4oMW3
+Terracoin: 1MsuC6knLeZKHCyQ39Xcw1qcgScS1ZK5R
+Feathercoin: 6tfEE48qk8Kgs9ancC82Y2iQBSX3VGYXfL
 
 ### License
 
@@ -156,8 +152,4 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
---------------------------
-
-:wq!
 
