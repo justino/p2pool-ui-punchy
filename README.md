@@ -87,8 +87,7 @@ var config = {
   myself : [],
   host : "http://p2pool.org:9332",
   reload_interval : 30,
-  reload_chart_interval : 600,
-  use_fontawesome : true
+  reload_chart_interval : 600
 }
 ```
 
@@ -101,8 +100,7 @@ var config = {
   myself : [],
   host : "",
   reload_interval : 20,
-  reload_chart_interval : 1200,
-  use_fontawesome : true
+  reload_chart_interval : 1200
 }
 ```
 
@@ -124,7 +122,7 @@ to set it to 20 seconds for example.
 
 ## Credits & License
 
-Justin La Sotten <>
+Justin La Sotten
 
 Original Code forked from https://github.com/johndoe75/p2pool-node-status
 Alexander Zschach <alex@zschach.net>
@@ -133,18 +131,18 @@ Alexander Zschach <alex@zschach.net>
 
 If you like this UI, find it useful, or like that people out there are writing free software for everybody to use or contribute, please donate some coins:
 
-Bitcoin: 195ufic8mfNrDqxgFCfmw5mQYwdu2im9G5
-Litecoin: LKs7z33st7PcnB28SMQhvCpawYapTm3HxC
-Vertcoin: VcoAm4gEg5vLmJ4NfRwaVkv8UWEPTXMTRC
+Bitcoin: 195ufic8mfNrDqxgFCfmw5mQYwdu2im9G5   
+Litecoin: LKs7z33st7PcnB28SMQhvCpawYapTm3HxC   
+Vertcoin: VcoAm4gEg5vLmJ4NfRwaVkv8UWEPTXMTRC   
 
 or
 
 If you would like to donate to the original developer:
 
-Bitcoin: 1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe
-Litecoin: LSRfZJf75MtwzrbAUfQgqzdK4hHpY4oMW3
-Terracoin: 1MsuC6knLeZKHCyQ39Xcw1qcgScS1ZK5R
-Feathercoin: 6tfEE48qk8Kgs9ancC82Y2iQBSX3VGYXfL
+Bitcoin: 1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe   
+Litecoin: LSRfZJf75MtwzrbAUfQgqzdK4hHpY4oMW3   
+Terracoin: 1MsuC6knLeZKHCyQ39Xcw1qcgScS1ZK5R   
+Feathercoin: 6tfEE48qk8Kgs9ancC82Y2iQBSX3VGYXfL   
 
 ### License
 
