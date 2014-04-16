@@ -133,6 +133,7 @@ If you like this UI, find it useful, or like that people out there are writing f
 
 Bitcoin: 195ufic8mfNrDqxgFCfmw5mQYwdu2im9G5   
 Litecoin: LKs7z33st7PcnB28SMQhvCpawYapTm3HxC   
+Dogecoin: DLethX5AdiwkvW28KhJxZBpBV9dr2ask53    
 Vertcoin: VcoAm4gEg5vLmJ4NfRwaVkv8UWEPTXMTRC   
 
 or
