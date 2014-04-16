@@ -11,6 +11,11 @@ Features:
 - Change themes with the click of a button
 - Chart indicates when blocks are found (merged from https://github.com/roy7/p2pool-node-status)
 
+See Screenshots:
+
+![Main UI](/img/screenshot.png?raw=true "Main UI")
+![with Graph](/img/screenshot-graph?raw=true "with Graph")
+
 ## Installation
 
 ### Parallel to the default web-static
