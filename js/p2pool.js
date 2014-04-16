@@ -80,16 +80,18 @@ $(document).on('update_miners', function(e, eventInfo) {
     local_hashrate = 0; 
     local_doa_hashrate = 0;
     
-    miners = sortByValue(local_stats.miner_hash_rates);
+    // Sort by hashrate, highest first
+    miners = sortByValue(local_stats.miner_hash_rates).reverse();
     
-    $.each(miners.reverse(), function(index, address) {
+    $.each(miners, function(_, address) {
         hashrate = local_stats.miner_hash_rates[address];
         tr = $('<tr/>').attr('id', address);
 
-        // highlight our miner if configured
+        // Highlight client miner if configured
         if (localStorage.miners && localStorage.miners.length > 0 && $.inArray(address, localStorage.miners.split("\n")) >= 0) {
             tr.addClass('success');
         }
+        // Highlight server miner if configures
         if (config.myself && config.myself.length > 0 && $.inArray(address, config.myself) >= 0) {
             tr.addClass('warning');
         }
