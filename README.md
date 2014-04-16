@@ -8,7 +8,7 @@ Features:
 - Important information at the top of the page
 - Mobile friendly
 - Each user can highlight their own miners through configuration stored on the local client
-- Change themes with the click of a button
+- Change themes with the click of a button (themes provided by: [Bootswatch.com](http://bootswatch.com))
 - Chart indicates when blocks are found (merged from https://github.com/roy7/p2pool-node-status)
 
 See Screenshots:
@@ -124,7 +124,7 @@ to set it to 20 seconds for example.
 
 Justin La Sotten
 
-Original Code forked from https://github.com/johndoe75/p2pool-node-status
+Original Code forked from https://github.com/johndoe75/p2pool-node-status    
 Alexander Zschach <alex@zschach.net>
 
 ### Donate
