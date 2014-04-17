@@ -82,16 +82,23 @@ $(document).on('update_miners', function(e, eventInfo) {
     
     // Sort by hashrate, highest first
     miners = sortByValue(local_stats.miner_hash_rates).reverse();
+    clientMiners = localStorage.miners.split("\n");
     
+    $('#active_miners').empty();
     $.each(miners, function(_, address) {
+        // Only display client miners if configured
+        if (localStorage.onlyclientminers === 'true' && $.inArray(address, clientMiners) == -1) {
+            return true;
+        }
+        
         hashrate = local_stats.miner_hash_rates[address];
         tr = $('<tr/>').attr('id', address);
 
         // Highlight client miner if configured
-        if (localStorage.miners && localStorage.miners.length > 0 && $.inArray(address, localStorage.miners.split("\n")) >= 0) {
+        if (localStorage.miners && localStorage.miners.length > 0 && $.inArray(address, clientMiners) >= 0) {
             tr.addClass('success');
         }
-        // Highlight server miner if configures
+        // Highlight server miner if configured
         if (config.myself && config.myself.length > 0 && $.inArray(address, config.myself) >= 0) {
             tr.addClass('warning');
         }
@@ -135,7 +142,7 @@ $(document).on('update_miners', function(e, eventInfo) {
             tr.append($('<td/>').attr('class', 'text-right')
                 .append($('<i/>').append('no shares yet')));
         }
-        $('#' + address).remove();
+
         $('#active_miners').append(tr);
     });
 
@@ -377,10 +384,12 @@ var fetchGraph = function(interval) {
 
 var setMyMiners = function() {
     localStorage.miners = $('#myminers').val();
+    localStorage.onlyclientminers = $('#onlymyminers').prop('checked');
     $(document).trigger('update_miners');
 };
 var fetchMyMiners = function() {
     $('#myminers').val(localStorage.miners);
+    $('#onlymyminers').prop('checked', localStorage.onlyclientminers == 'true' ? true : false);
 };
 
 var initThemes = function() {
