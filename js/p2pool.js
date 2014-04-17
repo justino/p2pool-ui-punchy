@@ -84,7 +84,7 @@ $(document).on('update_miners', function(e, eventInfo) {
     miners = sortByValue(local_stats.miner_hash_rates).reverse();
     clientMiners = localStorage.miners.split("\n");
     
-    $('#active_miners').empty();
+    $('#active_miners').find("tr:gt(0)").remove();
     $.each(miners, function(_, address) {
         // Only display client miners if configured
         if (localStorage.onlyclientminers === 'true' && $.inArray(address, clientMiners) == -1) {
