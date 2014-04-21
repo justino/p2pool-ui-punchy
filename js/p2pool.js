@@ -82,7 +82,7 @@ $(document).on('update_miners', function(e, eventInfo) {
     
     // Sort by hashrate, highest first
     miners = sortByValue(local_stats.miner_hash_rates).reverse();
-    clientMiners = localStorage.miners.split("\n");
+    clientMiners = (localStorage.miners && localStorage.miners.length > 0) ? localStorage.miners.split("\n") : [];
     
     $('#active_miners').find("tr:gt(0)").remove();
     $.each(miners, function(_, address) {
@@ -115,7 +115,7 @@ $(document).on('update_miners', function(e, eventInfo) {
         local_hashrate += hashrate || 0;
         local_doa_hashrate += doa  || 0;
 
-        diff = parseFloat(local_stats.miner_last_difficulties[address]) || 0;
+        diff = local_stats.miner_last_difficulties ? (parseFloat(local_stats.miner_last_difficulties[address]) || 0) : 0;
         time_to_share = (parseInt(local_stats.attempts_to_share) / parseInt(hashrate) * (diff / parseFloat(global_stats.min_difficulty))) || 0;
 
         tr.append($('<td/>').addClass('text-left')
@@ -307,26 +307,26 @@ $(document).on('update_time', function(e, eventInfo) {
 var fetchdata = function() {
     $.getJSON(api_url + '/rate', function(data) {
         if (data) { rate = data; }
-
-        $.getJSON(api_url + '/web/currency_info', function(data) {
-            if (data) { currency_info = data; }
-            $(document).trigger('update_currency');
-
-            $.getJSON(api_url + '/local_stats', function(data) {
-                if (data) { local_stats = data; }
-
-                $.getJSON(api_url + '/current_payouts', function(data) {
-                    if (data) { current_payouts = data; }
-
-                    $.getJSON(api_url + '/payout_addr', function(data) {
-                        if (data) { payout_addr = data; }
-
-                        $.getJSON(api_url + '/global_stats', function(data) {
-                                if (data) { global_stats= data; }
-                                
-                                $(document).trigger('update_miners');
-                                $(document).trigger('update_time');
-                        });
+    });
+    
+    $.getJSON(api_url + '/web/currency_info', function(data) {
+        if (data) { currency_info = data; }
+        $(document).trigger('update_currency');
+    
+        $.getJSON(api_url + '/local_stats', function(data) {
+            if (data) { local_stats = data; }
+    
+            $.getJSON(api_url + '/current_payouts', function(data) {
+                if (data) { current_payouts = data; }
+    
+                $.getJSON(api_url + '/payout_addr', function(data) {
+                    if (data) { payout_addr = data; }
+    
+                    $.getJSON(api_url + '/global_stats', function(data) {
+                            if (data) { global_stats= data; }
+                            
+                            $(document).trigger('update_miners');
+                            $(document).trigger('update_time');
                     });
                 });
             });
