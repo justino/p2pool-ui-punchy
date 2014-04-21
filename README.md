@@ -14,7 +14,8 @@ Features:
 
 See Screenshots:
 
-![Main UI](/img/screenshot.png?raw=true "Main UI")
+![Main UI - Stock p2pool](/img/screenshot_stock_p2pool.png?raw=true "Main UI - Stock p2pool")
+![Main UI - Extended p2pool](/img/screenshot_extended_p2pool.png?raw=true "Main UI - Extended p2pool")
 ![with Graph](/img/screenshot-graph.png?raw=true "with Graph")
 
 ## Installation
