@@ -10,3 +10,23 @@ body { padding-top: 70px; }
     width: 100%;
     height: 10em;
 }
+
+.navbar-right > button { cursor: default; }
+
+.status > li > span { float: right; }
+.status.pull-left { width: 50%; }
+.status.pull-right { width: 50%; }
+@media (max-width: 1170px) {
+    .status.pull-left { float: none!important; width: 100%; }
+    .status.pull-right { float: none!important; width: 100%; }
+}
+@media (max-width: 768px) {
+    .status > li > span {
+        font-weight: bold;
+        float: none;
+        display: inline-block;
+    }
+}
+
+/* Bootstrap does this when the UL is the first in the panel */
+.list-group .list-group-item:first-child { border-top-width: 0; }

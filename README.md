@@ -3,6 +3,7 @@ p2pool-ui-punchy
 
 Another alternative p2pool UI.
 Makes use of Bootstrap, jQuery and Highcharts.
+Compatible with [Standard p2pool](https://github.com/forrestv/p2pool) and [Extended p2pool](https://github.com/mmouse-/p2pool-vtc) (and any forks that pull these extensions)
 
 Features:
 - Important information at the top of the page

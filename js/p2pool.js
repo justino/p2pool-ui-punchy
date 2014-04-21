@@ -114,21 +114,51 @@ $(document).on('update_miners', function(e, eventInfo) {
 
         local_hashrate += hashrate || 0;
         local_doa_hashrate += doa  || 0;
-
-        diff = local_stats.miner_last_difficulties ? (parseFloat(local_stats.miner_last_difficulties[address]) || 0) : 0;
-        time_to_share = (parseInt(local_stats.attempts_to_share) / parseInt(hashrate) * (diff / parseFloat(global_stats.min_difficulty))) || 0;
-
-        tr.append($('<td/>').addClass('text-left')
+        
+        tr.append($('<td/>')
+            .addClass('text-left')
             .append(address_span)
             .append('&nbsp;')
-            .append(blockinfo));
-        tr.append($('<td/>').addClass('text-right').append(formatHashrate(hashrate)));
-        tr.append($('<td/>').addClass('text-right').append(
-            formatHashrate(doa) + ' (' + doa_prop.toFixed(2) + '%)'
-        ));
+            .append(blockinfo)
+        );
+        tr.append($('<td/>')
+            .addClass('text-right')
+            .append(formatHashrate(hashrate))
+        );
+        tr.append($('<td/>')
+            .addClass('text-right')
+            .append(formatHashrate(doa) + ' (' + doa_prop.toFixed(2) + '%)')
+        );
         
-        tr.append($('<td/>').addClass('text-right').append(diff.toFixed(3) + ' (' + formatInt(diff * 65536) + ')'));
-        tr.append($('<td/>').addClass('text-right').append(('' + time_to_share).formatSeconds()));
+        // Miner Last Difficulties is non-standard p2pool data
+        // Handle with care
+        if (local_stats.miner_last_difficulties) {
+            diff = local_stats.miner_last_difficulties ? (parseFloat(local_stats.miner_last_difficulties[address]) || 0) : 0;
+            time_to_share = (parseInt(local_stats.attempts_to_share) / parseInt(hashrate) * (diff / parseFloat(global_stats.min_difficulty))) || 0;
+            
+            if ($("#active_miners th:contains('Share Difficulty')").length == 0) {
+                var share_diff_col = $('<th/>')
+                    .addClass('text-right')
+                    .text('Share Difficulty');
+                var time_to_share_col = $('<th/>')
+                    .addClass('text-right')
+                    .text('Time to Share');
+                    
+                $('#active_miners thead tr')
+                    .children(":eq(2)")
+                    .after(time_to_share_col)
+                    .after(share_diff_col);
+            }
+            
+            tr.append($('<td/>')
+                .addClass('text-right')
+                .append(diff.toFixed(3) + ' (' + formatInt(diff * 65536) + ')')
+            );
+            tr.append($('<td/>')
+                .addClass('text-right')
+                .append(('' + time_to_share).formatSeconds())
+            );
+        }
 
         payout = current_payouts[address] || 0;
 
@@ -171,11 +201,46 @@ $(document).on('update_miners', function(e, eventInfo) {
         + '%)';
     $('#global_rate').text(global_rate);
 
-    network_rate = formatHashrate(global_stats.network_hashrate);
-    $('#network_rate').text(network_rate);
+    // Network Hash Rate information is non-standard p2pool data
+    // Handle with care
+    if (global_stats.network_hashrate) {
+        //<li class="list-group-item">Network Hashrate: <span class="network_rate"></span></li>
+        if ($(".status li:contains('Network Hashrate')").length == 0) {
+            // Add network hashrate bar to status area if it doesn't already exist
+            var nethash_row = $('<li/>')
+                .addClass('list-group-item')
+                .text('Network Hashrate: ')
+                .append( $('<span/>').addClass('network_rate') );
+            $('.status.rate_info').prepend(nethash_row);
+        }
+        
+        network_rate = formatHashrate(global_stats.network_hashrate);
+        $('.network_rate').text(network_rate);
+    }
 
-    $('#network_difficulty').text(parseFloat(global_stats.network_block_difficulty).toFixed(2));
-    $('#diff').text(parseFloat(global_stats.network_block_difficulty).toFixed(2));
+    // Network Block Diff information is non-standard p2pool data
+    // Handle with care
+    if (global_stats.network_block_difficulty) {
+        // Add diff button to the navbar if it doesn't already exist
+        if ($('button .diff').length == 0) {
+            var diff_button = $('<button/>')
+                .attr('type', 'button')
+                .addClass('btn navbar-btn btn-default btn-sm')
+                .text('Diff: ')
+                .append( $('<span/>').addClass('diff') );
+            $('.navbar-right').children(":eq(1)").after(diff_button);
+        }
+        // Add diff bar to status area if it doesn't already exist
+        if ($(".status li:contains('Network Block Difficulty')").length == 0) {
+            var diff_row = $('<li/>')
+                .addClass('list-group-item')
+                .text('Network Block Difficulty: ')
+                .append( $('<span/>').addClass('diff') );
+            $('.status.share_info').children(':eq(1)').after(diff_row);
+        }
+        
+        $('.diff').text(parseFloat(global_stats.network_block_difficulty).toFixed(2));
+    }
 
     $('#share_difficulty').text(parseFloat(global_stats.min_difficulty).toFixed(2));
 

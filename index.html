@@ -32,10 +32,11 @@
                 </div>
                 
                 <nav class="navbar-collapse collapse" role="navigation">
-                    <div class="navbar-right">
-                        <button type="button" class="btn navbar-btn btn-info btn-sm hidden-sm hidden-xs" data-toggle="modal" data-target="#hashgraph">Hashrate Graph <span class="caret"></span></button>
+                    <div class="navbar-right btn-group">
+                        <div class="btn-group">
+                            <button type="button" class="btn navbar-btn btn-info btn-sm hidden-sm hidden-xs" data-toggle="modal" data-target="#hashgraph">Hashrate Graph <span class="caret"></span></button>
+                        </div>
                         <button type="button" class="btn navbar-btn btn-default btn-sm">Last Block Found: <span id="last_block"></span></button>
-                        <button type="button" class="btn navbar-btn btn-default btn-sm">Diff: <span id="diff"></span></button>
                         <button type="button" class="btn navbar-btn btn-default btn-sm">Last Updated: <span id="updated"></span></button>
                         <div class="btn-group">
                             <button type="button" class="btn navbar-btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"><span class="fa fa-cog"></span></button>
@@ -64,87 +65,53 @@
                                 <th class="text-left">Address</th>
                                 <th class="text-right">Hashrate</th>
                                 <th class="text-right">Rejected Hashrate</th>
-                                <th class="text-right">Share Difficulty</th>
-                                <th class="text-right">Time to Share</th>
                                 <th class="text-right">Predicted Payout</th>
                             </tr>
                         </thead>
                     </table>
                 </div>
             </section>
-
-            <section class="panel panel-default">
+            
+            <section class="panel panel-default clearfix">
                 <div class="panel-heading">
                     <h4>Status</h4>
                 </div>
-                <div class="table-responsive">
-                    <table id="status" class="table" border="0">
-                        <tr>
-                            <td width="19%">Network Hashrate:</td>
-                            <td width="31%" class="text-right"><span id="network_rate"></span></td>
-                            <td width="19%">Local Shares:</td>
-                            <td width="31%" class="text-right"><a href="/web/my_share_hashes"><span id="shares"></span></a></td>
-                        </tr>
-                        <tr>
-                            <td width="19%">Global Pool Hashrate:</td>
-                            <td width="31%" class="text-right"><span id="global_rate"></span></td>
-                            <td width="19%">Share Difficulty:</td>
-                            <td width="31%" class="text-right"><span id="share_difficulty"></span></td>
-                        </tr>
-                        <tr>
-                            <td width="19%">Local Pool Hashrate:</td>
-                            <td width="31%" class="text-right"><span id="local_rate"></span></td>
-                            <td width="19%">Network Block Difficulty:</td>
-                            <td width="31%" class="text-right"><span id="network_difficulty"></span></td>
-                        </tr>
-                        <tr>
-                            <td width="19%">Current Block Value:</td>
-                            <td width="31%" class="text-right"><span id="block_value"></span></td>
-                            <td width="19%">Expected Time to Share:</td>
-                            <td width="31%" class="text-right"><span id="expected_time_to_share"></span></td>
-                        </tr>
-                        <tr>
-                            <td width="19%">&nbsp;</td>
-                            <td width="31%" class="text-right">&nbsp;</td>
-                            <td width="19%">Expected Time to Block:</td>
-                            <td width="31%" class="text-right"><span id="expected_time_to_block"></span></td>
-                        </tr>
-                    </table>
-                </div>
+                <ul class="list-group status rate_info pull-left">
+                    <li class="list-group-item">Global Pool Hashrate: <span id="global_rate"></span></li>
+                    <li class="list-group-item">Local Pool Hashrate: <span id="local_rate"></span></li>
+                    <li class="list-group-item">Current Block Value: <span id="block_value"></span></li>
+                </ul>
+                <ul class="list-group status share_info pull-right">
+                    <li class="list-group-item">Local Shares: <span id="shares"></span></li>
+                    <li class="list-group-item">Share Difficulty: <span id="share_difficulty"></span></li>
+                    <li class="list-group-item">Expected Time to Share: <span id="expected_time_to_share"></span></li>
+                    <li class="list-group-item">Expected Time to Block: <span id="expected_time_to_block"></span></li>
+                </ul>
             </section>
-      
-            <section class="panel panel-default">
+            
+            <section class="panel panel-default clearfix">
                 <div class="panel-heading">
                     <h4>Node Information</h4>
                 </div>
-                <div class="table-responsive">
-                    <table class="table node" border="0">
-                        <tr>
-                            <td width="19%">Node Peers:</td>
-                            <td width="31%" class="text-right">
-                                <i class="fa fa-sign-in fa-fw" title="Inbound"></i>
-                                <span id="peers_in"></span>
-                                /
-                                <i class="fa fa-sign-out fa-fw" title="Outbound"></i>
-                                <span id="peers_out"></span>
-                            </td>
-                            <td width="19%">Node Uptime:</td>
-                            <td width="31%" class="text-right"><span id="node_uptime"></span></td>
-                        </tr>
-                        <tr>
-                            <td width="19%">Node p2pool Version:</td>
-                            <td width="31%" class="text-right"><span id="p2pool_version"></span></td>
-                            <td width="19%">Protocol Version:</td>
-                            <td width="31%" class="text-right"><span id="protocol_version"></span></td>
-                        </tr>
-                        <tr>
-                            <td width="19%">Node Fee:</td>
-                            <td width="31%" class="text-right"><span id="node_fee"></span></td>
-                            <td width="19%">Node Donation:</td>
-                            <td width="31%" class="text-right"><span id="node_donation"></span></td>
-                        </tr>
-                    </table>
-                </div>
+                <ul class="list-group status pull-left">
+                    <li class="list-group-item">
+                        Node Peers:
+                        <span>
+                            <i class="fa fa-sign-in fa-fw" title="Inbound"></i>
+                            <span id="peers_in"></span>
+                            /
+                            <i class="fa fa-sign-out fa-fw" title="Outbound"></i>
+                            <span id="peers_out"></span>
+                        </span>
+                    </li>
+                    <li class="list-group-item">Node p2pool Version: <span id="p2pool_version"></span></li>
+                    <li class="list-group-item">Node Fee: <span id="node_fee"></span></li>
+                </ul>
+                <ul class="list-group status pull-right">
+                    <li class="list-group-item">Node Uptime: <span id="node_uptime"></span></li>
+                    <li class="list-group-item">Protocol Version: <span id="protocol_version"></span></li>
+                    <li class="list-group-item">Node Donation: <span id="node_donation"></span></li>
+                </ul>
             </section>
       
             <section class="panel panel-default">
