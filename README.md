@@ -53,7 +53,8 @@ var config = {
     myself : [],
     host : "http://p2pool.org:9332",
     reload_interval : 30,
-    reload_chart_interval : 600
+    reload_chart_interval : 600,
+    header_content_url : ""
 }
 ```
 
@@ -65,7 +66,7 @@ The `config.json` is found in `js` directory.
 
 ### Highlight the pool owners addresses.
 
-If you want your miner address highlighted, adjust `myself` variable accordingly. E.g.
+If you want your server miner addresses highlighted, adjust `myself` variable accordingly. E.g.
 
 ``` JavaScript
 var config = {
@@ -75,23 +76,38 @@ var config = {
     ],
     host : "",
     reload_interval : 30,
-    reload_chart_interval : 600
+    reload_chart_interval : 600,
+    header_content_url : ""
 }
 ```
 
 ### Point the UI to a different p2pool server
 
-
 You need to configure the host and port of your p2pool server in the `host` variable like
 
 ``` JavaScript
 var config = {
-  myself : [],
-  host : "http://p2pool.org:9332",
-  reload_interval : 30,
-  reload_chart_interval : 600
+    myself : [],
+    host : "http://p2pool.org:9332",
+    reload_interval : 30,
+    reload_chart_interval : 600,
+    header_content_url : ""
 }
 ```
+
+## Load additional content onto the page
+
+``` JavaScript
+var config = {
+    myself : [],
+    host : "",
+    reload_interval : 30,
+    reload_chart_interval : 600,
+    header_content_url : "cool_content.html"
+}
+```
+
+**NOTE** Loading content is subject to [Same-Origin Policy](http://en.wikipedia.org/wiki/Same_origin_policy)
 
 ### Adjust the reload interval
 
@@ -99,10 +115,11 @@ Per default the UI updates the miner list and server stats every 30 seconds.  Yo
 
 ``` JavaScript
 var config = {
-  myself : [],
-  host : "",
-  reload_interval : 20,
-  reload_chart_interval : 1200
+    myself : [],
+    host : "",
+    reload_interval : 20,
+    reload_chart_interval : 1200,
+    header_content_url : ""
 }
 ```
 
