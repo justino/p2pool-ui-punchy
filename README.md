@@ -95,7 +95,7 @@ var config = {
 }
 ```
 
-## Load additional content onto the page
+### Load additional content onto the page
 
 ``` JavaScript
 var config = {
