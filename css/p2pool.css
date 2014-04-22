@@ -31,6 +31,8 @@ body { padding-top: 70px; }
 /* Bootstrap does this when the UL is the first in the panel */
 section .list-group .list-group-item:first-child { border-top-width: 0; }
 
-footer { font-size: .8em; }
-footer.container-fluid { text-align: center; }
+footer { 
+    font-size: .8em;
+    text-align: center;
+}
 
