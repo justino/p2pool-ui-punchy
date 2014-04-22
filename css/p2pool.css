@@ -29,4 +29,8 @@ body { padding-top: 70px; }
 }
 
 /* Bootstrap does this when the UL is the first in the panel */
-.list-group .list-group-item:first-child { border-top-width: 0; }
+section .list-group .list-group-item:first-child { border-top-width: 0; }
+
+footer { font-size: .8em; }
+footer.container-fluid { text-align: center; }
+
