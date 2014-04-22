@@ -8,8 +8,6 @@ var config = {
   reload_interval : 30,
   // chart reload interval in seconds
   reload_chart_interval : 600,
-  use_fontawesome: true,
-  show_github_ribbon: true
   // HTML to load at top of page
-  navbar_url : ""
+  header_content_url : "http://localhost:8888/custom_content.html"
 }

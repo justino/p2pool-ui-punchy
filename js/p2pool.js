@@ -1,15 +1,8 @@
 $(document).ready(function() {
-    // shall the Github ribbon been shown?
-    if (config.show_github_ribbon) {
-        $('#ribbon').fadeIn(1000);
-    }
-    else { 
-        $('#ribbon').remove(); 
-    }
-
     $(document).trigger('init');
-    if (config.navbar_url && config.navbar_url.length > 0) {
-        $("#navbar").load(config.navbar_url);
+    
+    if (config.header_content_url && config.header_content_url.length > 0) {
+        $("#header_content").load(config.header_content_url);
     }
 });
 
@@ -479,15 +472,6 @@ var initThemes = function() {
 var changeTheme = function(theme) {
     $('#theme').attr('href', 'css/bootstrap-' + theme.toLowerCase() + '.min.css');
 };
-
-// Let the GitHub ribbon fade out and be removed after 5 seconds.
-if (config.show_github_ribbon) {
-    setTimeout(function() {
-        $('#ribbon').fadeOut(1000, function() {
-            this.remove();
-        });
-    }, 5 * 1000);
-}
 
 // update tables and miner data
 setInterval(function() {
