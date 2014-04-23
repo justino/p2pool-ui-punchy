@@ -66,29 +66,58 @@ $(document).on('update_graph', function(e, eventInfo) {
     fetchGraph(graphPeriod);
 });
 
-// Fills the list of active miners on this node.  I know, there are
-// zillions of people out there on p2pool.  But I'm typically only
-// interested to see, who is mining on my node.
 $(document).on('update_miners', function(e, eventInfo) {
+    clientMiners = [];
     local_hashrate = 0; 
     local_doa_hashrate = 0;
     
-    // Sort by hashrate, highest first
+    var highlight = localStorage.miners && localStorage.miners.length > 0
+        ? true : false;
+    var show_only_client_miners = localStorage.onlyclientminers && localStorage.onlyclientminers === 'true'
+        ? true : false;
+    
+    // Determine which miners we'll be showing
     miners = sortByValue(local_stats.miner_hash_rates).reverse();
     clientMiners = (localStorage.miners && localStorage.miners.length > 0) ? localStorage.miners.split("\n") : [];
+    if (window.location.hash && window.location.hash.substr(1)) {
+        clientMiners = [window.location.hash.substr(1)];
+        show_only_client_miners = true;
+        highlight = true;
+    }
+    
+    // Set text for miner display according to client preferences
+    if (show_only_client_miners) {
+        $('#miners h4').text('Your Miners On This Node');
+        $('#hashgraph h4').text('Your Hashrate Graph');
+        
+        var span = $('<span/>');
+        var a = $('<a/>')
+            .attr('href', '#')
+            .text('show all')
+            .click(function() {
+                window.location.hash = '';
+                $(document).trigger('update_miners');
+            })
+        span.append(' (').append(a).append(')');
+        $('#miners h4').append(span);
+    }
+    else {
+        $('#miners h4').text('Active Miners On This Node');
+        $('#hashgraph h4').text('Local Hashrate Graph');
+    }
     
     $('#active_miners').find("tr:gt(0)").remove();
     $.each(miners, function(_, address) {
         // Only display client miners if configured
-        if (localStorage.onlyclientminers === 'true' && $.inArray(address, clientMiners) == -1) {
+        if (show_only_client_miners && $.inArray(address, clientMiners) == -1) {
             return true;
         }
         
         hashrate = local_stats.miner_hash_rates[address];
-        tr = $('<tr/>').attr('id', address);
+        tr = $('<tr/>');
 
         // Highlight client miner if configured
-        if (localStorage.miners && localStorage.miners.length > 0 && $.inArray(address, clientMiners) >= 0) {
+        if (highlight && $.inArray(address, clientMiners) >= 0) {
             tr.addClass('success');
         }
         // Highlight server miner if configured
@@ -96,7 +125,16 @@ $(document).on('update_miners', function(e, eventInfo) {
             tr.addClass('warning');
         }
 
-        address_span = $('<span/>').addClass('coin_address').text(address);
+        address_span = $('<span/>')
+            .addClass('coin_address')
+            .append( $('<a/>')
+                .attr('href', '#' + address)
+                .text(address)
+                .click(function() {
+                    window.location.hash = '#' + $(this).text();
+                    $(document).trigger('update_miners');
+                })
+            );
         link_icon = $('<i/>').addClass('fa fa-external-link fa-fw');
         blockinfo = $('<a/>')
             .attr('href', currency_info.address_explorer_url_prefix + address)
@@ -407,37 +445,41 @@ var fetchGraph = function(interval) {
     var graph_hashrate = [], graph_doa_hashrate = [], graph_blocks = [];
 
     // Fetch Local Hashrates
-    $.getJSON(api_url + '/web/graph_data/local_hash_rate/last_' + interval, function(data) {
-        $.each(data, function(key, value) {
-            el = [];
-            el.push(parseInt(value[0]) * 1000, parseFloat(value[1]));
-            graph_hashrate.push(el);
+    $.getJSON(api_url + '/web/graph_data/miner_hash_rates/last_' + interval, function(data) {
+        $.each(data, function(_, data) {
+            var timestamp = parseInt(data[0]) * 1000;
+            var miner = Object.keys(data[1])[0];
+            var value = parseFloat(data[1][miner]);
+            
+            graph_hashrate.push( [timestamp, value] );
         });
         
         graph_hashrate.sort();
         
         // Fetch Local DOA Hashrates
-        $.getJSON(api_url + '/web/graph_data/local_dead_hash_rate/last_' + interval, function(data) {
-            $.each(data, function(key, value) {
-                el = [];
-                el.push(parseInt(value[0]) * 1000, parseFloat(value[1]));
-                graph_doa_hashrate.push(el);
+        $.getJSON(api_url + '/web/graph_data/miner_dead_hash_rates/last_' + interval, function(data) {
+            $.each(data, function(_, data) {
+                var timestamp = parseInt(data[0]) * 1000;
+                var miner = Object.keys(data[1])[0];
+                var value = parseFloat(data[1][miner]);
+
+                graph_doa_hashrate.push( [timestamp, value] );
             });
             
             graph_doa_hashrate.sort();
             
             // Fetch Recently Found Blocks
             $.getJSON(api_url + '/recent_blocks', function(data) {
-                $.each(data, function(key, block) {
-                    el = [];
-                    el.push(parseInt(block["ts"]) * 1000);
-                    graph_blocks.push(el);
+                $.each(data, function(_, data) {
+                    var timestamp = parseInt(data["ts"]) * 1000;
+                    
+                    graph_blocks.push( [timestamp] );
                 });
                 
                 draw(graph_hashrate, graph_doa_hashrate, graph_blocks, 'chart', interval);
-            });
-        });
-    });
+            }); // Recent Blocks
+        }); // Local DOA
+    }); // Local Hash
 };
 
 var setMyMiners = function() {

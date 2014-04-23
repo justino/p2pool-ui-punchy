@@ -11,6 +11,11 @@ body { padding-top: 70px; }
     height: 10em;
 }
 
+h4 span {
+    float: right;
+    font-size: .7em;
+}
+
 .navbar-right > button { cursor: default; }
 
 .status > li > span { float: right; }
