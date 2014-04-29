@@ -33,8 +33,6 @@ To run this UI in parallel to your current p2pool web interface, do in your web-
 git clone https://github.com/justino/p2pool-ui-punchy.git
 ```
 
-You can then access the UI per `http://<url-to-your-p2pool>:<port>/static/p2pool-ui-punchy/`
-
 ### As web-static replacement
 
 To replace your current web-static, in the top directory of your p2pool installation:
@@ -45,8 +43,22 @@ git clone https://github.com/justino/p2pool-ui-punchy.git
 ln -s p2pool-ui-punchy web-static
 ```
 
-and access normally: `http://<url-to-your-p2pool>:<port>/static`
+## Setup
 
+Once you have the UI installed, you'll need to create a configuration file.
+You can find the file in the `/js/` directory.
+Copy the example config `config.example.json` to `config.json` and modify to fit your needs.
+See the `Configuration` section below for option descriptions.
+
+Once this is setup, you'll be able to access the UI either by:
+`http://<url-to-your-p2pool>:<port>/static/p2pool-ui-punchy/` if you chose to do a parallel installation
+or
+`http://<url-to-your-p2pool>:<port>/static` is you chose to do a replacement installation
+
+## Configuration
+
+The `config.json` is found in `js` directory.
+    
 ### On a different host
 
 This UI can be run on a different web server as well.  The web server must then provide at least PHP in order to execute the JSONP handler.
@@ -64,10 +76,6 @@ var config = {
 ```
 
 **Beware**:  The UI queries the p2pool API periodically.  This will put additional network traffic on your p2pool server.  It can, but must not, result in a higher variance!
-
-## Configuration
-
-The `config.json` is found in `js` directory.
 
 ### Highlight the pool owners addresses.
 
