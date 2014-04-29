@@ -1,16 +1,17 @@
-$(document).ready(function() {
-    $(document).trigger('init');
-    
-    if (config.header_content_url && config.header_content_url.length > 0) {
-        $("#header_content").load(config.header_content_url);
-    }
-});
-
 var currency, currency_info, rate, local_stats, global_stats, current_payouts, recent_blocks, payout_addr;
 var local_hashrate= 0, local_doa_hashrate= 0;
-
 var jsonp = "./jsonp.php?callback=?";
 var api_url = "";
+if (typeof config === 'undefined') {
+    // Config couldn't be loaded, prefill with some basic defaults
+    config = {
+        myself: [],
+        host: '',
+        reload_interval: 30,
+        reload_chart_interval: 600,
+        header_content_url: ''
+    };
+}
 
 // Check if we shall remotely connect to a p2pool running somewhere
 if (config.host && config.host.length > 0) {
@@ -21,6 +22,14 @@ if (config.host && config.host.length > 0) {
 
 // ==================================================================
 // event handlers
+
+$(document).ready(function() {
+    $(document).trigger('init');
+    
+    if (config.header_content_url && config.header_content_url.length > 0) {
+        $("#header_content").load(config.header_content_url);
+    }
+});
 
 // toggle hashrate chart
 $('#hour.hashrate').click(function(e) {
