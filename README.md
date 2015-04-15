@@ -152,35 +152,19 @@ to set it to 20 seconds for example.
 
 - Individual address page with individual stats (more like tradition central pools, MPOS dashboard view)
 
-## Credits & License
-
-Justin La Sotten
-
-Original Code forked from https://github.com/johndoe75/p2pool-node-status    
-Alexander Zschach <alex@zschach.net>
-
-### Donate
+### Donations
 
 If you like this UI, find it useful, or like that people out there are writing free software for everybody to use or contribute, please donate some coins:
 
 Bitcoin: 195ufic8mfNrDqxgFCfmw5mQYwdu2im9G5   
-Litecoin: LKs7z33st7PcnB28SMQhvCpawYapTm3HxC   
-Dogecoin: DLethX5AdiwkvW28KhJxZBpBV9dr2ask53    
-Vertcoin: VcoAm4gEg5vLmJ4NfRwaVkv8UWEPTXMTRC   
-
-or
-
-If you would like to donate to the original developer:
-
-Bitcoin: 1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe   
-Litecoin: LSRfZJf75MtwzrbAUfQgqzdK4hHpY4oMW3   
-Terracoin: 1MsuC6knLeZKHCyQ39Xcw1qcgScS1ZK5R   
-Feathercoin: 6tfEE48qk8Kgs9ancC82Y2iQBSX3VGYXfL   
+Dashpay: XerSXuygP6PeUoqVRyC2BFFHpUXXkFU8UP
+Dogecoin: DLethX5AdiwkvW28KhJxZBpBV9dr2ask5
 
 ### License
 
 The MIT License (MIT)
 
+Copyright (c) 2014-2015 Justin La Sotten justin.otten@gmail.com
 Copyright (c) 2013-2014 Alexander Zschach alex@zschach.net
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
