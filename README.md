@@ -157,14 +157,14 @@ to set it to 20 seconds for example.
 If you like this UI, find it useful, or like that people out there are writing free software for everybody to use or contribute, please donate some coins:
 
 Bitcoin: 195ufic8mfNrDqxgFCfmw5mQYwdu2im9G5   
-Dashpay: XerSXuygP6PeUoqVRyC2BFFHpUXXkFU8UP
+Dashpay: XerSXuygP6PeUoqVRyC2BFFHpUXXkFU8UP   
 Dogecoin: DLethX5AdiwkvW28KhJxZBpBV9dr2ask5
 
 ### License
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2015 Justin La Sotten justin.otten@gmail.com
+Copyright (c) 2014-2015 Justin La Sotten justin.otten@gmail.com   
 Copyright (c) 2013-2014 Alexander Zschach alex@zschach.net
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
