@@ -474,7 +474,7 @@ var initThemes = function() {
             }
         }
         else {
-            changeTheme('default');
+            changeTheme(config.theme || 'default');
         }
     });
 };

@@ -122,6 +122,16 @@ var config = {
 
 **NOTE** Loading content is subject to [Same-Origin Policy](http://en.wikipedia.org/wiki/Same_origin_policy)
 
+### Change the default theme
+In the config hash, simply add a new key called 'theme' and set it's value to the name of the theme you'd like to
+be the default.
+
+``` JavaScript
+var config = {
+    theme : 'cyborg'
+}
+```
+
 ### Adjust the reload interval
 
 Per default the UI updates the miner list and server stats every 30 seconds.  You can adjust the `reload_interval` variable like
