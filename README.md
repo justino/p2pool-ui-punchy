@@ -59,24 +59,6 @@ or
 
 The `config.json` is found in `js` directory.
     
-### On a different host
-
-This UI can be run on a different web server as well.  The web server must then provide at least PHP in order to execute the JSONP handler.
-
-You need to configure the host and port of your p2pool server in the config.json like
-
-``` JavaScript
-var config = {
-    myself : [],
-    host : "http://p2pool.org:9332",
-    reload_interval : 30,
-    reload_chart_interval : 600,
-    header_content_url : ""
-}
-```
-
-**Beware**:  The UI queries the p2pool API periodically.  This will put additional network traffic on your p2pool server.  It can, but must not, result in a higher variance!
-
 ### Highlight the pool owners addresses.
 
 If you want your server miner addresses highlighted, adjust `myself` variable accordingly. E.g.
@@ -107,6 +89,8 @@ var config = {
     header_content_url : ""
 }
 ```
+
+**NOTE** Loading content is subject to [Same-Origin Policy](http://en.wikipedia.org/wiki/Same_origin_policy)
 
 ### Load additional content onto the page
 
@@ -161,6 +145,9 @@ to set it to 20 seconds for example.
 - More graphs for the p2pool node
 
 - Individual address page with individual stats (more like tradition central pools, MPOS dashboard view)
+
+## Deprecated
+- jsonp.php - this was deprecated and should not be used, it was a huge security risk. Instead use standard remote host config. If that doesn't work because of cross-origin restrictions, check your p2pool HTTP config to allow it.
 
 ### Donations
 

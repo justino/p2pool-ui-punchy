@@ -1,7 +1,5 @@
 var currency, currency_info, rate, local_stats, global_stats, current_payouts, recent_blocks, payout_addr;
 var local_hashrate= 0, local_doa_hashrate= 0;
-var jsonp = "./jsonp.php?callback=?";
-var api_url = "";
 if (typeof config === 'undefined') {
     // Config couldn't be loaded, prefill with some basic defaults
     config = {
@@ -13,12 +11,8 @@ if (typeof config === 'undefined') {
     };
 }
 
-// Check if we shall remotely connect to a p2pool running somewhere
-if (config.host && config.host.length > 0) {
-    api_url = jsonp + '&host=' + encodeURI(config.host) + '&report=';
-    $('#node').removeClass('hidden').text(config.host);
-    $('#_node').removeClass('hidden');
-}
+// Check if we are connecting to a remote p2pool
+var api_url = config.host || '';
 
 // ==================================================================
 // event handlers
