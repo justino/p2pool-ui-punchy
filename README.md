@@ -154,8 +154,8 @@ to set it to 20 seconds for example.
 If you like this UI, find it useful, or like that people out there are writing free software for everybody to use or contribute, please donate some coins:
 
 Bitcoin: 195ufic8mfNrDqxgFCfmw5mQYwdu2im9G5   
+Ethereum: dee42d6b58e5d5d9f6f4c4783bea4fff34369c64   
 Dashpay: XerSXuygP6PeUoqVRyC2BFFHpUXXkFU8UP   
-Dogecoin: DLethX5AdiwkvW28KhJxZBpBV9dr2ask5
 
 ### License
 
