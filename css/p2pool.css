@@ -36,3 +36,8 @@ footer {
     text-align: center;
 }
 
+.recent_blocks {
+    height: 600px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
