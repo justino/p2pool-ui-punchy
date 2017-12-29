@@ -171,6 +171,7 @@ $(document).on('update_miners', function(e, eventInfo) {
 
         $('#active_miners').append(tr);
     });
+    $.bootstrapSortable({ applyLast: true });
 
     if (local_doa_hashrate !== 0 && local_hashrate !== 0) {
         doa_rate = (local_doa_hashrate / local_hashrate) * 100;

@@ -10,7 +10,8 @@
 
         <!-- Bootstrap core CSS -->
         <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-        <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" >
+        <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+        <link rel="stylesheet" href="css/bootstrap-sortable.css">
         <link id="theme" rel="stylesheet" href="#">
 
         <script src="js/config.json"></script>
@@ -60,7 +61,7 @@
                     <h4>Active Miners On This Node</h4>
                 </div>
                 <div class="table-responsive">
-                    <table id="active_miners" class="table table-hover">
+                    <table id="active_miners" class="table table-hover sortable">
                         <thead>
                             <tr>
                                 <th class="text-left">Address</th>
@@ -223,6 +224,8 @@
         <script src="https://code.jquery.com/jquery-2.0.3.min.js"></script>
         <script src="js/jquery-dateFormat.min.js"></script>
         <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+        <script src="js/bootstrap-sortable.js"></script>>
         
         <script src="js/highcharts.js"></script>
         <script src="js/exporting.js"></script>
