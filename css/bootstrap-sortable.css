@@ -9,12 +9,11 @@
  */
 
 table.sortable span.sign {
-    display: block;
-    position: absolute;
     top: 50%;
     right: 5px;
     font-size: 12px;
     margin-top: -10px;
+    margin-left: 5px;
     color: #bfbfc1;
 }
 
@@ -41,6 +40,7 @@ table.sortable span.arrow, span.reversed, th.arrow.down:after, th.reversedarrow.
     height: 0;
     width: 0;
     margin-top: -2px;
+
 }
 
     table.sortable span.arrow.up, th.arrow.up:after {
