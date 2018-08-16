@@ -30,8 +30,10 @@ body { padding-top: 70px; }
 
 /* Override some bootstap stuff */
 .panel .list-group .list-group-item:first-child { border-top-width: 0; }
-.panel .list-group .list-group-item:last-child { border-bottom: 0; border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;}
 .list-group { box-shadow: none; -webkit-box-shadow: none; }
+@media (min-width: 1171px) {
+  .panel .list-group .list-group-item:last-child { border-bottom: 0; border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;}
+}
 
 footer {
   font-size: .8em;
