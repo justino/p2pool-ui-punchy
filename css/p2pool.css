@@ -28,8 +28,10 @@ body { padding-top: 70px; }
   }
 }
 
-/* Bootstrap does this when the UL is the first in the panel */
-section .list-group .list-group-item:first-child { border-top-width: 0; }
+/* Override some bootstap stuff */
+.panel .list-group .list-group-item:first-child { border-top-width: 0; }
+.panel .list-group .list-group-item:last-child { border-bottom: 0; border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;}
+.list-group { box-shadow: none; -webkit-box-shadow: none; }
 
 footer {
   font-size: .8em;
