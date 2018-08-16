@@ -1,237 +1,315 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="shortcut icon" href="favicon.ico">
 
-        <title>p2pool - node stats</title>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="favicon.ico">
 
-        <!-- Bootstrap core CSS -->
-        <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-        <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
-        <link rel="stylesheet" href="css/bootstrap-sortable.css">
-        <link id="theme" rel="stylesheet" href="#">
+    <title>p2pool - node stats</title>
 
-        <script src="js/config.json"></script>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+    <link rel="stylesheet" href="css/bootstrap-sortable.css">
+    <link id="theme" rel="stylesheet" href="#">
 
-        <!-- Custom styles for this template -->
-        <link href="css/p2pool.css" rel="stylesheet">
-    </head>
-    <body>
-        <header class="navbar navbar-inverse navbar-fixed-top" role="banner">
-            <div class="container">
-                <div class="navbar-header">
-                    <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="#">p2pool <span id="currency"></span></a>
-                </div>
-                
-                <nav class="navbar-collapse collapse" role="navigation">
-                    <div class="navbar-right btn-group">
-                        <div class="btn-group">
-                            <button type="button" class="btn navbar-btn btn-info btn-sm hidden-sm hidden-xs" data-toggle="modal" data-target="#hashgraph">Hashrate Graph <span class="caret"></span></button>
-                        </div>
-                        <button type="button" class="btn navbar-btn btn-default btn-sm">Last Block Found: <span id="last_block"></span></button>
-                        <button type="button" class="btn navbar-btn btn-default btn-sm">Last Updated: <span id="updated"></span></button>
-                        <div class="btn-group">
-                            <button type="button" class="btn navbar-btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"><span class="fa fa-cog"></span></button>
-                            <ul class="dropdown-menu" role="menu">
-                                <li data-toggle="modal" data-target="#setminers"><a href="#">Set My Miners</a></li>
-                                <li data-toggle="modal" data-target="#settheme"><a href="#">Change Theme</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </nav>
-            </div>
-        </header>
+    <script src="js/config.json"></script>
 
-        <div class="container">
-            <div id="node_alerts" class="alert alert-danger hidden"></div>
-            <div class="alert alert-info hidden">2013-12-13: This is a message to miners on my node telling them something really cool.</div>
-            <div id="header_content"></div>
-      
-            <section class="panel panel-default">
-                <div class="panel-heading">
-                    <h4>Active Miners On This Node</h4>
-                </div>
-                <div class="table-responsive">
-                    <table id="active_miners" class="table table-hover sortable">
-                        <thead>
-                            <tr>
-                                <th class="text-left">Address</th>
-                                <th class="text-right">Hashrate</th>
-                                <th class="text-right">Rejected Hashrate</th>
-                                <th class="text-right">Predicted Payout</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-            </section>
-            
-            <section class="panel panel-default clearfix">
-                <div class="panel-heading">
-                    <h4>Status</h4>
-                </div>
-                <ul class="list-group status rate_info pull-left">
-                    <li class="list-group-item">Global Pool Hashrate: <span id="global_rate"></span></li>
-                    <li class="list-group-item">Local Pool Hashrate: <span id="local_rate"></span></li>
-                    <li class="list-group-item">Current Block Value: <span id="block_value"></span></li>
-                </ul>
-                <ul class="list-group status share_info pull-right">
-                    <li class="list-group-item">Local Shares: <span id="shares"></span></li>
-                    <li class="list-group-item">Share Difficulty: <span id="share_difficulty"></span></li>
-                    <li class="list-group-item">Expected Time to Share: <span id="expected_time_to_share"></span></li>
-                    <li class="list-group-item">Expected Time to Block: <span id="expected_time_to_block"></span></li>
-                </ul>
-            </section>
-            
-            <section class="panel panel-default clearfix">
-                <div class="panel-heading">
-                    <h4>Node Information</h4>
-                </div>
-                <ul class="list-group status pull-left">
-                    <li class="list-group-item">
-                        Node Peers:
-                        <span>
-                            <i class="fa fa-sign-in fa-fw" title="Inbound"></i>
-                            <span id="peers_in"></span>
-                            /
-                            <i class="fa fa-sign-out fa-fw" title="Outbound"></i>
-                            <span id="peers_out"></span>
-                        </span>
-                    </li>
-                    <li class="list-group-item">Node p2pool Version: <span id="p2pool_version"></span></li>
-                    <li class="list-group-item">Node Fee: <span id="node_fee"></span></li>
-                </ul>
-                <ul class="list-group status pull-right">
-                    <li class="list-group-item">Node Uptime: <span id="node_uptime"></span></li>
-                    <li class="list-group-item">Protocol Version: <span id="protocol_version"></span></li>
-                    <li class="list-group-item">Node Donation: <span id="node_donation"></span></li>
-                </ul>
-            </section>
-      
-            <section class="panel panel-default">
-                <div class="panel-heading">
-                    <h4>Recent Blocks</h4>
-                </div>
-                <div class="recent_blocks table-responsive">
-                    <table id="recent_blocks" class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>When</th>
-                                <th>Date/Time</th>
-                                <th>Number</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-            </section>
+    <!-- Custom styles for this template -->
+    <link href="css/p2pool.css" rel="stylesheet">
+  </head>
 
-            <section id="hashgraph" class="modal fade" role="dialog" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title">Local Hashrate Graph</h4>
-                        </div>
-                        <div class="modal-body">
-                            <div id="chart-buttons">
-                                <button id="hour" type="button" class="hashrate btn btn-info">Hour</button>
-                                <button id="day" type="button" class="hashrate btn btn-info">Day</button>
-                                <button id="week" type="button" class="hashrate btn btn-info">Week</button>
-                                <button id="month" type="button" class="hashrate btn btn-info">Month</button>
-                                <button id="year" type="button" class="hashrate btn btn-info">Year</button>
-                            </div>
-                            <div id="chart"></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <section id="setminers" class="modal fade" role="dialog" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title">Set My Miners</h4>
-                        </div>
-                        <div class="modal-body clearfix">
-                            <p>Add a list of your miners to highlight on the stats page.</p>
-                            <p>One address per line:</p>
-                            <textarea id="myminers"></textarea>
-                            <input id="onlymyminers" name="onlymyminers" type="checkbox" value="0" />
-                            <label for="onlymyminers">Display only my miners</label>
-                            <button id="setminers" type="button" class="btn btn-primary pull-right" data-dismiss="modal">Set Miners</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <section id="settheme" class="modal fade" role="dialog" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden"true">&times;</button>
-                            <h4 class="modal-title">Set Theme</h4>
-                        </div>
-                        <div class="modal-body clearfix">
-                            <p>Choose a Theme:</p>
-                            <ul class="nav nav-pills nav-stacked">
-                                <li class="active"><a href="#">Default</a></li>
-                                <li><a href="#">Amelia</a></li>
-                                <li><a href="#">Cerulean</a></li>
-                                <li><a href="#">Cosmo</a></li>
-                                <li><a href="#">Cyborg</a></li>
-                                <li><a href="#">Darkly</a></li>
-                                <li><a href="#">Flatly</a></li>
-                                <li><a href="#">Journal</a></li>
-                                <li><a href="#">Lumen</a></li>
-                                <li><a href="#">Readable</a></li>
-                                <li><a href="#">Simplex</a></li>
-                                <li><a href="#">Slate</a></li>
-                                <li><a href="#">Spacelab</a></li>
-                                <li><a href="#">Superhero</a></li>
-                                <li><a href="#">United</a></li>
-                                <li><a href="#">Yeti</a></li>
-                            </ul>
-                            <p class="pull-right">Themes from <a href="http://bootswatch.com/">Bootswatch.com</a></p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+  <body>
+    <header class="navbar navbar-inverse navbar-fixed-top" role="banner">
+      <div class="container">
+        <div class="navbar-header">
+          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">p2pool
+            <span id="currency"></span>
+          </a>
         </div>
-        
-        <footer class="container">
-            <div class="panel panel-default clearfix">
-                <div class="panel-heading clearfix">
-                    <div class="col-sm-6">UI by <a href="https://github.com/justino/p2pool-ui-punchy">justino</a></div>
-                    <div class="col-sm-6">Please donate if you like this UI:</div>
-                </div>
-                <div class="panel-body">
-                    <div class="col-md-4"><i class="fa fa-btc"></i>: 195ufic8mfNrDqxgFCfmw5mQYwdu2im9G5</div>
-                    <div class="col-md-4">ETH: dee42d6b58e5d5d9f6f4c4783bea4fff34369c64</div>
-                    <div class="col-md-4">DASH: XerSXuygP6PeUoqVRyC2BFFHpUXXkFU8UP</div>
-                </div>
+
+        <nav class="navbar-collapse collapse" role="navigation">
+          <div class="navbar-right btn-group">
+            <div class="btn-group">
+              <button type="button" class="btn navbar-btn btn-info btn-sm hidden-sm hidden-xs" data-toggle="modal" data-target="#hashgraph">Hashrate Graph
+                <span class="caret"></span>
+              </button>
             </div>
-        </footer>
-        
-        <script src="https://code.jquery.com/jquery-2.0.3.min.js"></script>
-        <script src="js/jquery-dateFormat.min.js"></script>
-        <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
-        <script src="js/bootstrap-sortable.js"></script>>
-        
-        <script src="js/highcharts.js"></script>
-        <script src="js/exporting.js"></script>
-        
-        <script src="js/util.js"></script>
-        <script src="js/charts.js"></script>
-        <script src="js/p2pool.js"></script>
-    </body>
+            <button type="button" class="btn navbar-btn btn-default btn-sm">Last Block Found:
+              <span id="last_block"></span>
+            </button>
+            <button type="button" class="btn navbar-btn btn-default btn-sm">Last Updated:
+              <span id="updated"></span>
+            </button>
+            <div class="btn-group">
+              <button type="button" class="btn navbar-btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                <span class="fa fa-cog"></span>
+              </button>
+              <ul class="dropdown-menu" role="menu">
+                <li data-toggle="modal" data-target="#setminers">
+                  <a href="#">Set My Miners</a>
+                </li>
+                <li data-toggle="modal" data-target="#settheme">
+                  <a href="#">Change Theme</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <div class="container">
+      <div id="node_alerts" class="alert alert-danger hidden"></div>
+      <div class="alert alert-info hidden">2013-12-13: This is a message to miners on my node telling them something really cool.</div>
+      <div id="header_content"></div>
+
+      <section class="panel panel-default">
+        <div class="panel-heading">
+          <h4>Active Miners On This Node</h4>
+        </div>
+        <div class="table-responsive">
+          <table id="active_miners" class="table table-hover sortable">
+            <thead>
+              <tr>
+                <th class="text-left">Address</th>
+                <th class="text-right">Hashrate</th>
+                <th class="text-right">Rejected Hashrate</th>
+                <th class="text-right">Predicted Payout</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel panel-default clearfix">
+        <div class="panel-heading">
+          <h4>Status</h4>
+        </div>
+        <ul class="list-group status rate_info pull-left">
+          <li class="list-group-item">Global Pool Hashrate:
+            <span id="global_rate"></span>
+          </li>
+          <li class="list-group-item">Local Pool Hashrate:
+            <span id="local_rate"></span>
+          </li>
+          <li class="list-group-item">Current Block Value:
+            <span id="block_value"></span>
+          </li>
+        </ul>
+        <ul class="list-group status share_info pull-right">
+          <li class="list-group-item">Local Shares:
+            <span id="shares"></span>
+          </li>
+          <li class="list-group-item">Share Difficulty:
+            <span id="share_difficulty"></span>
+          </li>
+          <li class="list-group-item">Expected Time to Share:
+            <span id="expected_time_to_share"></span>
+          </li>
+          <li class="list-group-item">Expected Time to Block:
+            <span id="expected_time_to_block"></span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="panel panel-default clearfix">
+        <div class="panel-heading">
+          <h4>Node Information</h4>
+        </div>
+        <ul class="list-group status pull-left">
+          <li class="list-group-item">
+            Node Peers:
+            <span>
+              <i class="fa fa-sign-in fa-fw" title="Inbound"></i>
+              <span id="peers_in"></span>
+              /
+              <i class="fa fa-sign-out fa-fw" title="Outbound"></i>
+              <span id="peers_out"></span>
+            </span>
+          </li>
+          <li class="list-group-item">Node p2pool Version:
+            <span id="p2pool_version"></span>
+          </li>
+          <li class="list-group-item">Node Fee:
+            <span id="node_fee"></span>
+          </li>
+        </ul>
+        <ul class="list-group status pull-right">
+          <li class="list-group-item">Node Uptime:
+            <span id="node_uptime"></span>
+          </li>
+          <li class="list-group-item">Protocol Version:
+            <span id="protocol_version"></span>
+          </li>
+          <li class="list-group-item">Node Donation:
+            <span id="node_donation"></span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="panel panel-default">
+        <div class="panel-heading">
+          <h4>Recent Blocks</h4>
+        </div>
+        <div class="recent_blocks table-responsive">
+          <table id="recent_blocks" class="table table-hover">
+            <thead>
+              <tr>
+                <th>When</th>
+                <th>Date/Time</th>
+                <th>Number</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </section>
+
+      <section id="hashgraph" class="modal fade" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title">Local Hashrate Graph</h4>
+            </div>
+            <div class="modal-body">
+              <div id="chart-buttons">
+                <button id="hour" type="button" class="hashrate btn btn-info">Hour</button>
+                <button id="day" type="button" class="hashrate btn btn-info">Day</button>
+                <button id="week" type="button" class="hashrate btn btn-info">Week</button>
+                <button id="month" type="button" class="hashrate btn btn-info">Month</button>
+                <button id="year" type="button" class="hashrate btn btn-info">Year</button>
+              </div>
+              <div id="chart"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="setminers" class="modal fade" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title">Set My Miners</h4>
+            </div>
+            <div class="modal-body clearfix">
+              <p>Add a list of your miners to highlight on the stats page.</p>
+              <p>One address per line:</p>
+              <textarea id="myminers"></textarea>
+              <input id="onlymyminers" name="onlymyminers" type="checkbox" value="0" />
+              <label for="onlymyminers">Display only my miners</label>
+              <button id="setminers" type="button" class="btn btn-primary pull-right" data-dismiss="modal">Set Miners</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="settheme" class="modal fade" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden "true">&times;</button>
+              <h4 class="modal-title">Set Theme</h4>
+            </div>
+            <div class="modal-body clearfix">
+              <p>Choose a Theme:</p>
+              <ul class="nav nav-pills nav-stacked">
+                <li class="active">
+                  <a href="#">Default</a>
+                </li>
+                <li>
+                  <a href="#">Amelia</a>
+                </li>
+                <li>
+                  <a href="#">Cerulean</a>
+                </li>
+                <li>
+                  <a href="#">Cosmo</a>
+                </li>
+                <li>
+                  <a href="#">Cyborg</a>
+                </li>
+                <li>
+                  <a href="#">Darkly</a>
+                </li>
+                <li>
+                  <a href="#">Flatly</a>
+                </li>
+                <li>
+                  <a href="#">Journal</a>
+                </li>
+                <li>
+                  <a href="#">Lumen</a>
+                </li>
+                <li>
+                  <a href="#">Readable</a>
+                </li>
+                <li>
+                  <a href="#">Simplex</a>
+                </li>
+                <li>
+                  <a href="#">Slate</a>
+                </li>
+                <li>
+                  <a href="#">Spacelab</a>
+                </li>
+                <li>
+                  <a href="#">Superhero</a>
+                </li>
+                <li>
+                  <a href="#">United</a>
+                </li>
+                <li>
+                  <a href="#">Yeti</a>
+                </li>
+              </ul>
+              <p class="pull-right">Themes from
+                <a href="http://bootswatch.com/">Bootswatch.com</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="container">
+      <div class="panel panel-default clearfix">
+        <div class="panel-heading clearfix">
+          <div class="col-sm-6">UI by
+            <a href="https://github.com/justino/p2pool-ui-punchy">justino</a>
+          </div>
+          <div class="col-sm-6">Please donate if you like this UI:</div>
+        </div>
+        <div class="panel-body">
+          <div class="col-md-4">
+            <i class="fa fa-btc"></i>: 195ufic8mfNrDqxgFCfmw5mQYwdu2im9G5</div>
+          <div class="col-md-4">ETH: dee42d6b58e5d5d9f6f4c4783bea4fff34369c64</div>
+          <div class="col-md-4">DASH: XerSXuygP6PeUoqVRyC2BFFHpUXXkFU8UP</div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script src="js/jquery-dateFormat.min.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+    <script src="js/bootstrap-sortable.js"></script>>
+
+    <script src="js/highcharts.js"></script>
+    <script src="js/exporting.js"></script>
+
+    <script src="js/util.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/p2pool.js"></script>
+  </body>
+
 </html>
