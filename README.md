@@ -47,7 +47,7 @@ ln -s p2pool-ui-punchy web-static
 
 Once you have the UI installed, you'll need to create a configuration file.
 You can find the file in the `/js/` directory.
-Copy the example config `config.example.json` to `config.json` and modify to fit your needs.
+Copy the example config `config.example.js` to `config.js` and modify to fit your needs.
 See the `Configuration` section below for option descriptions.
 
 Once this is setup, you'll be able to access the UI either by:
@@ -57,22 +57,22 @@ or
 
 ## Configuration
 
-The `config.json` is found in `js` directory.
-    
+The `config.js` is found in `js` directory.
+
 ### Highlight the pool owners addresses.
 
 If you want your server miner addresses highlighted, adjust `myself` variable accordingly. E.g.
 
 ``` JavaScript
 var config = {
-    myself : [
+    myself: [
         "195ufic8mfNrDqxgFCfmw5mQYwdu2im9G5",
         "1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe"
     ],
-    host : "",
-    reload_interval : 30,
-    reload_chart_interval : 600,
-    header_content_url : ""
+    host: "",
+    reload_interval: 30,
+    reload_chart_interval: 600,
+    header_content_url: ""
 }
 ```
 
@@ -82,11 +82,11 @@ You need to configure the host and port of your p2pool server in the `host` vari
 
 ``` JavaScript
 var config = {
-    myself : [],
-    host : "http://p2pool.org:9332",
-    reload_interval : 30,
-    reload_chart_interval : 600,
-    header_content_url : ""
+    myself: [],
+    host: "http://p2pool.org:9332",
+    reload_interval: 30,
+    reload_chart_interval: 600,
+    header_content_url: ""
 }
 ```
 
@@ -96,11 +96,11 @@ var config = {
 
 ``` JavaScript
 var config = {
-    myself : [],
-    host : "",
-    reload_interval : 30,
-    reload_chart_interval : 600,
-    header_content_url : "cool_content.html"
+    myself: [],
+    host: "",
+    reload_interval: 30,
+    reload_chart_interval: 600,
+    header_content_url: "cool_content.html"
 }
 ```
 
@@ -112,7 +112,7 @@ be the default.
 
 ``` JavaScript
 var config = {
-    theme : 'cyborg'
+    theme: 'cyborg'
 }
 ```
 
@@ -122,11 +122,11 @@ Per default the UI updates the miner list and server stats every 30 seconds.  Yo
 
 ``` JavaScript
 var config = {
-    myself : [],
-    host : "",
-    reload_interval : 20,
-    reload_chart_interval : 1200,
-    header_content_url : ""
+    myself: [],
+    host: "",
+    reload_interval: 20,
+    reload_chart_interval: 1200,
+    header_content_url: ""
 }
 ```
 
@@ -149,19 +149,21 @@ to set it to 20 seconds for example.
 ## Deprecated
 - jsonp.php - this was deprecated and should not be used, it was a huge security risk. Instead use standard remote host config. If that doesn't work because of cross-origin restrictions, check your p2pool HTTP config to allow it.
 
+- config.json - this was incorrectly designated as JSON when in fact it was really just plain javascript. Simply renaming it from `config.json` -> `config.js` will fix it.
+
 ### Donations
 
 If you like this UI, find it useful, or like that people out there are writing free software for everybody to use or contribute, please donate some coins:
 
-Bitcoin: 195ufic8mfNrDqxgFCfmw5mQYwdu2im9G5   
-Ethereum: dee42d6b58e5d5d9f6f4c4783bea4fff34369c64   
-Dashpay: XerSXuygP6PeUoqVRyC2BFFHpUXXkFU8UP   
+Bitcoin: 195ufic8mfNrDqxgFCfmw5mQYwdu2im9G5
+Ethereum: dee42d6b58e5d5d9f6f4c4783bea4fff34369c64
+Dashpay: XerSXuygP6PeUoqVRyC2BFFHpUXXkFU8UP
 
 ### License
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2015 Justin La Sotten justin.otten@gmail.com   
+Copyright (c) 2014-2015 Justin La Sotten justin.otten@gmail.com
 Copyright (c) 2013-2014 Alexander Zschach alex@zschach.net
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
