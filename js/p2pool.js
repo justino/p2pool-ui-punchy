@@ -236,10 +236,10 @@ $(document).on('update_miners', function (e, eventInfo) {
       $('.status.share_info').children(':eq(1)').after(diff_row);
     }
 
-    $('.diff').text(parseFloat(global_stats.network_block_difficulty).toFixed(2));
+    $('.diff').text(parseFloat(global_stats.network_block_difficulty).toFixed(8));
   }
 
-  $('#share_difficulty').text(parseFloat(global_stats.min_difficulty).toFixed(2));
+  $('#share_difficulty').text(parseFloat(global_stats.min_difficulty).toFixed(8));
 
   $('#block_value')
     .text(parseFloat(local_stats.block_value).toFixed(8))
