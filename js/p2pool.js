@@ -312,7 +312,7 @@ $(document).on('update_blocks', function (e, eventInfo) {
     $('#recent_blocks').append(tr);
   });
 
-  if (recent_blocks[0] != null & recent_blocks[0].ts != null) {
+  if (recent_blocks[0] != null && recent_blocks[0].ts != null) {
     $('#last_block').text($.format.prettyDate(new Date(recent_blocks[0].ts * 1000)));
   }
   else {
