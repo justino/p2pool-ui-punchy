@@ -245,7 +245,14 @@ $(document).on('update_miners', function (e, eventInfo) {
     .text(parseFloat(local_stats.block_value).toFixed(8))
     .append(' ').append(currency.clone());
 
-  $('#node_donation').text((local_stats.donation_proportion * 100) + '%');
+  if (local_stats.donation_proportion <= 0) {
+    $('#node_donation').parent().hide();
+  }
+  else {
+    $('#node_donation').parent().show();
+    $('#node_donation').text((local_stats.donation_proportion * 100) + '%');
+  }
+
   $('#node_fee').text(local_stats.fee + '%');
   $('#p2pool_version').text(local_stats.version);
   $('#protocol_version').text(local_stats.protocol_version);
