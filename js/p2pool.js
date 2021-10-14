@@ -1,15 +1,33 @@
-var currency, currency_info, rate, local_stats, global_stats, current_payouts, recent_blocks, payout_addr;
-var local_hashrate = 0, local_doa_hashrate = 0;
-if (typeof config === 'undefined') {
-  // Config couldn't be loaded, prefill with some basic defaults
-  config = {
-    myself: [],
+const default_config = {
+  myself: [],
     host: '',
     reload_interval: 30,
     reload_chart_interval: 600,
-    header_content_url: ''
-  };
-}
+    header_content_url: '',
+    theme: 'default',
+    available_themes: [
+      'default',
+      'amelia',
+      'cerulean',
+      'cosmo',
+      'cyborg',
+      'darkly',
+      'flatly',
+      'journal',
+      'lumen',
+      'readable',
+      'simplex',
+      'slate',
+      'spacelab',
+      'superhero',
+      'united',
+      'yeti'
+    ]
+};
+config = { ...default_config, ...config };
+
+var currency, currency_info, rate, local_stats, global_stats, current_payouts, recent_blocks, payout_addr;
+var local_hashrate = 0, local_doa_hashrate = 0;
 
 // Check if we are connecting to a remote p2pool
 var api_url = config.host || '';
@@ -461,26 +479,29 @@ var fetchMyMiners = function () {
   $('#onlymyminers').prop('checked', localStorage.onlyclientminers == 'true' ? true : false);
 };
 
-var initThemes = function () {
-  $('#settheme li a').click(function () {
-    $(this).addClass('active').siblings().removeClass('active');
-    localStorage.theme = $(this).text().trim();
-    changeTheme(localStorage.theme);
-  });
+const initThemes = function() {
+  localStorage.theme = localStorage.theme || 'default';
 
-  $('#settheme li a').each(function () {
-    if (localStorage.theme) {
-      if ($(this).text() === localStorage.theme) {
-        $(this).addClass('active').siblings().removeClass('active');
-        changeTheme(localStorage.theme);
-      }
+  for (const theme of config.available_themes) {
+    const li = $('<li>');
+    const a = $('<a>').text(theme)
+
+    li.click(function() {
+      $(this).addClass('active').siblings().removeClass('active');
+      localStorage.theme = $(this).text().trim();
+      changeTheme(localStorage.theme);
+    });
+
+    if (theme === localStorage.theme) {
+      li.addClass('active')
+      changeTheme(localStorage.theme)
     }
-    else {
-      changeTheme(config.theme || 'default');
-    }
-  });
+
+    li.append(a)
+    $('#theme-list').append(li)
+  }
 };
-var changeTheme = function (theme) {
+const changeTheme = function(theme) {
   $('#theme').attr('href', 'css/bootstrap-' + theme.toLowerCase().trim() + '.min.css');
 };
 

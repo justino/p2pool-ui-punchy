@@ -107,12 +107,29 @@ var config = {
 **NOTE** Loading content is subject to [Same-Origin Policy](http://en.wikipedia.org/wiki/Same_origin_policy)
 
 ### Change the default theme
-In the config hash, simply add a new key called 'theme' and set it's value to the name of the theme you'd like to
+In the config hash, simply add a new key called `theme` and set it's value to the name of the theme you'd like to
 be the default.
 
 ``` JavaScript
 var config = {
     theme: 'cyborg'
+}
+```
+
+### Add new themes
+In the config hash, simply add a new array key called `available_themes` and add the theme name.
+
+When adding custom themes, add the `.min.css` file to the `css` directory in the format:
+
+```
+./css/bootstrap-<THEME NAME>.min.css
+```
+
+```javascript
+var config = {
+  available_themes: [
+    'cool-theme'
+  ]
 }
 ```
 

@@ -6,6 +6,13 @@ body { padding-top: 70px; }
 
 #chart-buttons { text-align: center; }
 
+#theme-list {
+  cursor: pointer;
+}
+#theme-list li::first-letter {
+  text-transform: uppercase;
+}
+
 #setminers textarea {
   width: 100%;
   height: 10em;
