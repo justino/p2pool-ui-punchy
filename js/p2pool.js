@@ -29,9 +29,6 @@ config = { ...default_config, ...config };
 var currency, currency_info, rate, local_stats, global_stats, current_payouts, recent_blocks, payout_addr;
 var local_hashrate = 0, local_doa_hashrate = 0;
 
-// Check if we are connecting to a remote p2pool
-var api_url = config.host || '';
-
 // ==================================================================
 // event handlers
 
@@ -392,24 +389,24 @@ $(document).on('update_time', function (e, eventInfo) {
 // ==================================================================
 
 var fetchdata = function () {
-  $.getJSON(api_url + '/rate', function (data) {
+  $.getJSON(config.host + '/rate', function (data) {
     if (data) { rate = data; }
   });
 
-  $.getJSON(api_url + '/web/currency_info', function (data) {
+  $.getJSON(config.host + '/web/currency_info', function (data) {
     if (data) { currency_info = data; }
     $(document).trigger('update_currency');
 
-    $.getJSON(api_url + '/local_stats', function (data) {
+    $.getJSON(config.host + '/local_stats', function (data) {
       if (data) { local_stats = data; }
 
-      $.getJSON(api_url + '/current_payouts', function (data) {
+      $.getJSON(config.host + '/current_payouts', function (data) {
         if (data) { current_payouts = data; }
 
-        $.getJSON(api_url + '/payout_addr', function (data) {
+        $.getJSON(config.host + '/payout_addr', function (data) {
           if (data) { payout_addr = data; }
 
-          $.getJSON(api_url + '/global_stats', function (data) {
+          $.getJSON(config.host + '/global_stats', function (data) {
             if (data) { global_stats = data; }
 
             $(document).trigger('update_miners');
@@ -422,10 +419,10 @@ var fetchdata = function () {
 };
 
 var fetchBlocks = function () {
-  $.getJSON(api_url + '/web/currency_info', function (data) {
+  $.getJSON(config.host + '/web/currency_info', function (data) {
     if (data) { currency_info = data; }
 
-    $.getJSON(api_url + '/recent_blocks', function (data) {
+    $.getJSON(config.host + '/recent_blocks', function (data) {
       if (data) { recent_blocks = data; }
       $(document).trigger('update_blocks');
     });
@@ -436,7 +433,7 @@ var fetchGraph = function (interval) {
   var graph_hashrate = [], graph_doa_hashrate = [], graph_blocks = [];
 
   // Fetch Local Hashrates
-  $.getJSON(api_url + '/web/graph_data/local_hash_rate/last_' + interval, function (data) {
+  $.getJSON(config.host + '/web/graph_data/local_hash_rate/last_' + interval, function (data) {
     $.each(data, function (key, value) {
       el = [];
       el.push(parseInt(value[0]) * 1000, parseFloat(value[1]));
@@ -446,7 +443,7 @@ var fetchGraph = function (interval) {
     graph_hashrate.sort();
 
     // Fetch Local DOA Hashrates
-    $.getJSON(api_url + '/web/graph_data/local_dead_hash_rate/last_' + interval, function (data) {
+    $.getJSON(config.host + '/web/graph_data/local_dead_hash_rate/last_' + interval, function (data) {
       $.each(data, function (key, value) {
         el = [];
         el.push(parseInt(value[0]) * 1000, parseFloat(value[1]));
@@ -456,7 +453,7 @@ var fetchGraph = function (interval) {
       graph_doa_hashrate.sort();
 
       // Fetch Recently Found Blocks
-      $.getJSON(api_url + '/recent_blocks', function (data) {
+      $.getJSON(config.host + '/recent_blocks', function (data) {
         $.each(data, function (key, block) {
           el = [];
           el.push(parseInt(block["ts"]) * 1000);
