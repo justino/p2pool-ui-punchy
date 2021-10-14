@@ -2,9 +2,9 @@
 // formats a given hashrate (H/s) to humand readable hashrate
 // like xxx.yyy GH/s
 // ======================================================================
-var formatHashrate = function (rate) {
+const formatHashrate = function(rate) {
   rate = parseFloat(rate);
-  unit = 'H/s';
+  let unit = 'H/s';
   if (rate >= 1000) { rate /= 1000; unit = 'KH/s'; }
   if (rate >= 1000) { rate /= 1000; unit = 'MH/s'; }
   if (rate >= 1000) { rate /= 1000; unit = 'GH/s'; }
@@ -17,9 +17,9 @@ var formatHashrate = function (rate) {
 // ======================================================================
 // formats a given int value to human readable si format
 // ======================================================================
-var formatInt = function (rate) {
+const formatInt = function(rate) {
   rate = parseFloat(rate);
-  unit = '';
+  let unit = '';
   if (rate >= 1000) { rate /= 1000; unit = 'k'; }
   if (rate >= 1000) { rate /= 1000; unit = 'M'; }
   if (rate >= 1000) { rate /= 1000; unit = 'G'; }
@@ -48,8 +48,8 @@ const formatSeconds = function(time) {
 // ======================================================================
 // Sorts a dict by value
 // ======================================================================
-function sortByValue(toSort) {
-  var keys = Object.keys(toSort);
+const sortByValue = function(toSort) {
+  const keys = Object.keys(toSort);
   keys.sort(function (a, b) {
     return toSort[a] < toSort[b] ? -1 : (toSort[a] === toSort[b] ? 0 : 1);
   });
