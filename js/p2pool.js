@@ -462,13 +462,13 @@ var fetchMyMiners = function () {
 };
 
 var initThemes = function () {
-  $('#settheme li').click(function () {
+  $('#settheme li a').click(function () {
     $(this).addClass('active').siblings().removeClass('active');
-    localStorage.theme = $(this).text();
+    localStorage.theme = $(this).text().trim();
     changeTheme(localStorage.theme);
   });
 
-  $('#settheme li').each(function () {
+  $('#settheme li a').each(function () {
     if (localStorage.theme) {
       if ($(this).text() === localStorage.theme) {
         $(this).addClass('active').siblings().removeClass('active');
@@ -481,7 +481,7 @@ var initThemes = function () {
   });
 };
 var changeTheme = function (theme) {
-  $('#theme').attr('href', 'css/bootstrap-' + theme.toLowerCase() + '.min.css');
+  $('#theme').attr('href', 'css/bootstrap-' + theme.toLowerCase().trim() + '.min.css');
 };
 
 // update tables and miner data
