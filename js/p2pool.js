@@ -167,7 +167,7 @@ $(document).on('update_miners', function (e, eventInfo) {
       );
       tr.append($('<td/>')
         .addClass('text-right')
-        .append(('' + time_to_share).formatSeconds())
+        .append(formatSeconds(time_to_share))
       );
     }
 
@@ -273,7 +273,7 @@ $(document).on('update_miners', function (e, eventInfo) {
   $('#protocol_version').text(local_stats.protocol_version);
   $('#peers_in').text(local_stats.peers.incoming);
   $('#peers_out').text(local_stats.peers.outgoing);
-  $('#node_uptime').text(('' + local_stats.uptime).formatSeconds());
+  $('#node_uptime').text(formatSeconds(local_stats.uptime));
 
   if (local_stats.warnings.length > 0) {
     $('#node_alerts').empty();
@@ -301,7 +301,7 @@ $(document).on('update_miners', function (e, eventInfo) {
 
   if (local_hashrate !== 0) {
     time_to_share = (parseInt(local_stats.attempts_to_share) / parseInt(local_hashrate));
-    $('#expected_time_to_share').text(('' + time_to_share).formatSeconds());
+    $('#expected_time_to_share').text(formatSeconds(time_to_share));
   }
   else {
     $('#expected_time_to_share').html('&dash;');
@@ -309,7 +309,7 @@ $(document).on('update_miners', function (e, eventInfo) {
 
   attempts_to_block = parseInt(local_stats.attempts_to_block || 0);
   time_to_block = attempts_to_block / pool_hash_rate;
-  $('#expected_time_to_block').text(('' + time_to_block).formatSeconds());
+  $('#expected_time_to_block').text(formatSeconds(time_to_block));
 });
 
 // Fills the recent block table
