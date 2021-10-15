@@ -51,26 +51,127 @@ $('#year.hashrate').click(() => { fetchGraph('year') });
 $('#setminers.btn').click(() => { setMyMiners() });
 
 // ==================================================================
+
+const fetchCurrencyInfo = async () => {
+  const resp = await fetch(new URL('/web/currency_info', config.host), { cache: 'no-cache' });
+  p2pool_data['currency_info'] = await resp.json();
+};
+
+const fetchData = async () => {
+  // URL Segment => p2pool_data[key]
+  const p2pool_map = {
+    '/rate': 'rate',
+    '/local_stats': 'local_stats',
+    '/current_payouts': 'current_payouts',
+    '/global_stats': 'global_stats',
+    '/recent_blocks': 'recent_blocks'
+  }
+
+  for (const segment in p2pool_map) {
+    const resp = await fetch(new URL(segment, config.host), { cache: 'no-cache' });
+    p2pool_data[p2pool_map[segment]] = await resp.json();
+  }
+
+  $(document).trigger('update_currency');
+  $(document).trigger('update_miners');
+  $(document).trigger('update_time');
+  $(document).trigger('update_blocks');
+};
+
+const fetchGraph = async (interval) => {
+  if (! interval) {
+    interval = localStorage.getItem('graph_type') || 'day';
+  }
+
+  const graph_hashrate = [], graph_doa_hashrate = [], graph_blocks = [];
+
+  const hash_response = await fetch(new URL(`/web/graph_data/local_hash_rate/last_${interval}`, config.host), { cache: 'no-cache' });
+  const doa_hash_response = await fetch(new URL(`/web/graph_data/local_dead_hash_rate/last_${interval}`, config.host), { cache: 'no-cache' });
+
+  const hashrate_data = await hash_response.json();
+  const doa_hashrate_data = await doa_hash_response.json();
+
+  for (const key in hashrate_data) {
+    const value = hashrate_data[key];
+
+    const el = [];
+    el.push(parseInt(value[0]) * 1000, parseFloat(value[1]));
+    graph_hashrate.push(el);
+  }
+  graph_hashrate.sort();
+
+  for (const key in doa_hashrate_data) {
+    const value = doa_hashrate_data[key];
+
+    const el = [];
+    el.push(parseInt(value[0]) * 1000, parseFloat(value[1]));
+    graph_doa_hashrate.push(el);
+  }
+  graph_doa_hashrate.sort();
+
+  for (const block of p2pool_data['recent_blocks']) {
+    const el = [];
+    el.push(parseInt(block["ts"]) * 1000);
+    graph_blocks.push(el);
+  }
+
+  localStorage.setItem('graph_type', interval)
+  draw(graph_hashrate, graph_doa_hashrate, graph_blocks, 'chart', interval);
+};
+
+const setMyMiners = () => {
+  localStorage.miners = $('#myminers').val();
+  localStorage.onlyclientminers = $('#onlymyminers').prop('checked');
+  $(document).trigger('update_miners');
+};
+
+const fetchMyMiners = () => {
+  $('#myminers').val(localStorage.miners);
+  $('#onlymyminers').prop('checked', localStorage.onlyclientminers == 'true' ? true : false);
+};
+
+const initThemes = () => {
+  localStorage.theme = localStorage.theme || 'default';
+
+  for (const theme of config.available_themes) {
+    const li = $('<li>');
+    const a = $('<a>').text(theme)
+
+    li.click(function() {
+      $(this).addClass('active').siblings().removeClass('active');
+      localStorage.theme = $(this).text().trim();
+      changeTheme(localStorage.theme);
+    });
+
+    if (theme === localStorage.theme) {
+      li.addClass('active')
+      changeTheme(localStorage.theme)
+    }
+
+    li.append(a)
+    $('#theme-list').append(li)
+  }
+};
+const changeTheme = (theme) => {
+  $('#theme').attr('href', 'css/bootstrap-' + theme.toLowerCase().trim() + '.min.css');
+};
+
+// ==================================================================
 // custom event handlers
 
 // init
-$(document).on('init', () => {
-  fetchBlocks();
-  fetchData();
-  fetchGraph('day');
+
+$(document).on('update', fetchData);
+$(document).on('update_graph', fetchGraph);
+
+$(document).on('init', async () => {
+  setInterval(() => { $(document).trigger('update'); }, config.reload_interval * 1000);
 
   fetchMyMiners();
   initThemes();
-});
+  fetchCurrencyInfo();
 
-$(document).on('update', () => {
-  fetchBlocks();
-  fetchData();
-});
-
-$(document).on('update_graph', () => {
-  graphPeriod = chart.title.text.match(/\((.+)\)/)[1] || 'day';
-  fetchGraph(graphPeriod);
+  $(document).trigger('update');
 });
 
 // Fills the list of active miners on this node.  I know, there are
@@ -80,13 +181,14 @@ $(document).on('update_miners', () => {
   const local_stats = p2pool_data['local_stats'];
   const global_stats = p2pool_data['global_stats'];
   const current_payouts = p2pool_data['current_payouts'];
+  const currency_info = p2pool_data['currency_info'];
 
   let local_hashrate = 0;
   let local_doa_hashrate = 0;
 
   // Sort by hashrate, highest first
-  miners = sortByValue(local_stats.miner_hash_rates).reverse();
-  clientMiners = (localStorage.miners && localStorage.miners.length > 0) ? localStorage.miners.split("\n") : [];
+  const miners = sortByValue(local_stats.miner_hash_rates).reverse();
+  const clientMiners = (localStorage.miners && localStorage.miners.length > 0) ? localStorage.miners.split("\n") : [];
 
   $('#active_miners').find("tr:gt(0)").remove();
   $.each(miners, (_, address) => {
@@ -95,8 +197,8 @@ $(document).on('update_miners', () => {
       return true;
     }
 
-    hashrate = local_stats.miner_hash_rates[address];
-    tr = $('<tr/>').attr('id', address);
+    const hashrate = local_stats.miner_hash_rates[address];
+    const tr = $('<tr/>').attr('id', address);
 
     // Highlight client miner if configured
     if (localStorage.miners && localStorage.miners.length > 0 && $.inArray(address, clientMiners) >= 0) {
@@ -107,14 +209,14 @@ $(document).on('update_miners', () => {
       tr.addClass('warning');
     }
 
-    address_span = $('<span/>').addClass('coin_address').text(address);
-    link_icon = $('<i/>').addClass('fa fa-external-link fa-fw');
-    blockinfo = $('<a/>')
-      .attr('href', p2pool_data['currency_info'].address_explorer_url_prefix + address)
+    const address_span = $('<span/>').addClass('coin_address').text(address);
+    const link_icon = $('<i/>').addClass('fa fa-external-link fa-fw');
+    const blockinfo = $('<a/>')
+      .attr('href', currency_info.address_explorer_url_prefix + address)
       .attr('target', '_blank').append(link_icon);
 
-    doa = local_stats.miner_dead_hash_rates[address] || 0;
-    doa_prop = (parseFloat(doa) / parseFloat(hashrate)) * 100;
+    const doa = local_stats.miner_dead_hash_rates[address] || 0;
+    const doa_prop = (parseFloat(doa) / parseFloat(hashrate)) * 100;
 
     local_hashrate += hashrate || 0;
     local_doa_hashrate += doa || 0;
@@ -137,8 +239,8 @@ $(document).on('update_miners', () => {
     // Miner Last Difficulties is non-standard p2pool data
     // Handle with care
     if (local_stats.miner_last_difficulties) {
-      diff = local_stats.miner_last_difficulties ? (parseFloat(local_stats.miner_last_difficulties[address]) || 0) : 0;
-      time_to_share = (parseInt(local_stats.attempts_to_share) / parseInt(hashrate) * (diff / parseFloat(global_stats.min_difficulty))) || 0;
+      const diff = local_stats.miner_last_difficulties ? (parseFloat(local_stats.miner_last_difficulties[address]) || 0) : 0;
+      const time_to_share = (parseInt(local_stats.attempts_to_share) / parseInt(hashrate) * (diff / parseFloat(global_stats.min_difficulty))) || 0;
 
       if ($("#active_miners th:contains('Share Difficulty')").length == 0) {
         const share_diff_col = $('<th/>')
@@ -164,10 +266,10 @@ $(document).on('update_miners', () => {
       );
     }
 
-    payout = current_payouts[address] || 0;
+    const payout = current_payouts[address] || 0;
 
     if (payout) {
-      td = $('<td/>').attr('class', 'text-right')
+      const td = $('<td/>').attr('class', 'text-right')
         .text(parseFloat(payout).toFixed(8))
         .append(' ').append(currency.clone());
       tr.append(td);
@@ -181,25 +283,23 @@ $(document).on('update_miners', () => {
   });
   $.bootstrapSortable({ applyLast: true });
 
+  let doa_rate = 0;
   if (local_doa_hashrate !== 0 && local_hashrate !== 0) {
     doa_rate = (local_doa_hashrate / local_hashrate) * 100;
   }
-  else {
-    doa_rate = 0;
-  }
 
-  rate = formatHashrate(local_hashrate)
+  const rate = formatHashrate(local_hashrate)
     + ' (Rejected '
     + formatHashrate(local_doa_hashrate)
     + ' / ' + doa_rate.toFixed(2)
     + '%)';
   $('#local_rate').text(rate);
 
-  pool_hash_rate = parseInt(global_stats.pool_hash_rate || 0);
-  pool_nonstale_hash_rate = parseInt(global_stats.pool_nonstale_hash_rate || 0);
-  global_doa_rate = pool_hash_rate - pool_nonstale_hash_rate;
+  const pool_hash_rate = parseInt(global_stats.pool_hash_rate || 0);
+  const pool_nonstale_hash_rate = parseInt(global_stats.pool_nonstale_hash_rate || 0);
+  const global_doa_rate = pool_hash_rate - pool_nonstale_hash_rate;
 
-  global_rate = formatHashrate(pool_hash_rate)
+  const global_rate = formatHashrate(pool_hash_rate)
     + ' (Rejected '
     + formatHashrate(global_doa_rate)
     + ' / ' + ((global_doa_rate / pool_hash_rate) * 100).toFixed(2)
@@ -219,7 +319,7 @@ $(document).on('update_miners', () => {
       $('.status.rate_info').prepend(nethash_row);
     }
 
-    network_rate = formatHashrate(global_stats.network_hashrate);
+    const network_rate = formatHashrate(global_stats.network_hashrate);
     $('.network_rate').text(network_rate);
   }
 
@@ -293,15 +393,15 @@ $(document).on('update_miners', () => {
       + ', Dead: ' + local_stats.shares.dead + ')');
 
   if (local_hashrate !== 0) {
-    time_to_share = (parseInt(local_stats.attempts_to_share) / parseInt(local_hashrate));
+    const time_to_share = (parseInt(local_stats.attempts_to_share) / parseInt(local_hashrate));
     $('#expected_time_to_share').text(formatSeconds(time_to_share));
   }
   else {
     $('#expected_time_to_share').html('&dash;');
   }
 
-  attempts_to_block = parseInt(local_stats.attempts_to_block || 0);
-  time_to_block = attempts_to_block / pool_hash_rate;
+  const attempts_to_block = parseInt(local_stats.attempts_to_block || 0);
+  const time_to_block = attempts_to_block / pool_hash_rate;
   $('#expected_time_to_block').text(formatSeconds(time_to_block));
 });
 
@@ -312,16 +412,16 @@ $(document).on('update_blocks', () => {
   $('#recent_blocks').find('tbody tr').remove();
 
   $.each(recent_blocks, (key, block) => {
-    ts = block.ts;
-    num = block.number;
-    hash = block.hash;
+    const ts = block.ts;
+    const num = block.number;
+    const hash = block.hash;
 
     // link to blockchain.info for the given hash
-    blockinfo = $('<a/>')
+    const blockinfo = $('<a/>')
       .attr('href', p2pool_data['currency_info'].block_explorer_url_prefix + hash)
       .attr('target', '_blank').text(num);
 
-    tr = $('<tr/>').attr('id', num);
+    const tr = $('<tr/>').attr('id', num);
     tr.append($('<td/>').append($.format.prettyDate(new Date(ts * 1000))));
     tr.append($('<td/>').append($.format.date(new Date(ts * 1000))));
     tr.append($('<td/>').append(blockinfo));
@@ -341,16 +441,16 @@ $(document).on('update_shares', () => {
   const recent_blocks = p2pool_data['recent_blocks'];
 
   $.each(recent_blocks, (key, block) => {
-    ts = block.ts;
-    num = block.number;
-    hash = block.hash;
+    const ts = block.ts;
+    const num = block.number;
+    const hash = block.hash;
 
     // link to blockchain.info for the given hash
-    blockinfo = $('<a/>')
+    const blockinfo = $('<a/>')
       .attr('href', p2pool_data['currency_info'].block_explorer_url_prefix + hash)
       .attr('target', '_blank').text(hash);
 
-    tr = $('<tr/>').attr('id', num);
+    const tr = $('<tr/>').attr('id', num);
     tr.append($('<td/>').append($.format.prettyDate(new Date(ts * 1000))));
     tr.append($('<td/>').append(num));
     tr.append($('<td/>').append(blockinfo));
@@ -364,7 +464,7 @@ $(document).on('update_shares', () => {
 $(document).on('update_currency', () => {
   const currency_info = p2pool_data['currency_info'];
 
-  if (p2pool_data['currency_info'].symbol === 'BTC') {
+  if (currency_info.symbol === 'BTC') {
     // use fontawesome BTC symbol
     currency = $('<i/>').attr('class', 'fa fa-btc fa-fw');
   }
@@ -380,125 +480,19 @@ $(document).on('update_currency', () => {
 
 // Updates the 'Updated:' field in page header
 $(document).on('update_time', () => {
-  dts = $.format.date(new Date(), 'yyyy-MM-dd hh:mm:ss p');
+  const dts = $.format.date(new Date(), 'yyyy-MM-dd hh:mm:ss p');
   $('#updated').text(dts);
 });
 
-// ==================================================================
+// Manage graph modal data
+$('#hashgraph').on('shown.bs.modal', () => {
+  p2pool_data['graph_interval'] = setInterval(() => {
+    $(document).trigger('update_graph');
+  }, config.reload_chart_interval * 1000);
 
-const fetchData = async () => {
-  // URL Segment => p2pool_data[key]
-  const p2pool_map = {
-    '/rate': 'rate',
-    '/web/currency_info': 'currency_info',
-    '/local_stats': 'local_stats',
-    '/current_payouts': 'current_payouts',
-    '/global_stats': 'global_stats'
-  }
-
-  for (const segment in p2pool_map) {
-    const resp = await fetch(new URL(segment, config.host), { cache: 'no-cache' });
-    p2pool_data[p2pool_map[segment]] = await resp.json();
-  }
-
-  $(document).trigger('update_currency');
-  $(document).trigger('update_miners');
-  $(document).trigger('update_time');
-};
-
-const fetchBlocks = async () => {
-  const p2pool_map = {
-    '/web/currency_info': 'currency_info',
-    '/recent_blocks': 'recent_blocks'
-  };
-
-  for (const segment in p2pool_map) {
-    const resp = await fetch(new URL(segment, config.host), { cache: 'no-cache' });
-    p2pool_data[p2pool_map[segment]] = await resp.json();
-  }
-
-  $(document).trigger('update_blocks');
-};
-
-const fetchGraph = async (interval) => {
-  const graph_hashrate = [], graph_doa_hashrate = [], graph_blocks = [];
-
-  const hash_response = await fetch(new URL(`/web/graph_data/local_hash_rate/last_${interval}`, config.host), { cache: 'no-cache' });
-  const doa_hash_response = await fetch(new URL(`/web/graph_data/local_dead_hash_rate/last_${interval}`, config.host), { cache: 'no-cache' });
-
-  const hashrate_data = await hash_response.json();
-  const doa_hashrate_data = await doa_hash_response.json();
-
-  for (const key in hashrate_data) {
-    const value = hashrate_data[key];
-
-    el = [];
-    el.push(parseInt(value[0]) * 1000, parseFloat(value[1]));
-    graph_hashrate.push(el);
-  }
-  graph_hashrate.sort();
-
-  for (const key in doa_hashrate_data) {
-    const value = doa_hashrate_data[key];
-
-    el = [];
-    el.push(parseInt(value[0]) * 1000, parseFloat(value[1]));
-    graph_doa_hashrate.push(el);
-  }
-  graph_doa_hashrate.sort();
-
-  for (const block of p2pool_data['recent_blocks']) {
-    el = [];
-    el.push(parseInt(block["ts"]) * 1000);
-    graph_blocks.push(el);
-  }
-
-  draw(graph_hashrate, graph_doa_hashrate, graph_blocks, 'chart', interval);
-};
-
-const setMyMiners = () => {
-  localStorage.miners = $('#myminers').val();
-  localStorage.onlyclientminers = $('#onlymyminers').prop('checked');
-  $(document).trigger('update_miners');
-};
-
-const fetchMyMiners = () => {
-  $('#myminers').val(localStorage.miners);
-  $('#onlymyminers').prop('checked', localStorage.onlyclientminers == 'true' ? true : false);
-};
-
-const initThemes = () => {
-  localStorage.theme = localStorage.theme || 'default';
-
-  for (const theme of config.available_themes) {
-    const li = $('<li>');
-    const a = $('<a>').text(theme)
-
-    li.click(function() {
-      $(this).addClass('active').siblings().removeClass('active');
-      localStorage.theme = $(this).text().trim();
-      changeTheme(localStorage.theme);
-    });
-
-    if (theme === localStorage.theme) {
-      li.addClass('active')
-      changeTheme(localStorage.theme)
-    }
-
-    li.append(a)
-    $('#theme-list').append(li)
-  }
-};
-const changeTheme = (theme) => {
-  $('#theme').attr('href', 'css/bootstrap-' + theme.toLowerCase().trim() + '.min.css');
-};
-
-// update tables and miner data
-setInterval(() => {
-  $(document).trigger('update');
-}, config.reload_interval * 1000);
-
-// update blocks and graph
-setInterval(() => {
   $(document).trigger('update_graph');
-}, config.reload_chart_interval * 1000);
+});
+$('#hashgraph').on('hidden.bs.modal', () => {
+  clearInterval(p2pool_data['graph_interval']);
+  delete p2pool_data['graph_interval'];
+});
