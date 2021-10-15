@@ -295,6 +295,9 @@ $(document).on('update_miners', () => {
     + '%)';
   $('#local_rate').text(rate);
 
+  const efficiency = parseFloat(local_stats.efficiency * 100).toFixed(2);
+  $('#local_efficiency').text(`${efficiency}%`);
+
   const pool_hash_rate = parseInt(global_stats.pool_hash_rate || 0);
   const pool_nonstale_hash_rate = parseInt(global_stats.pool_nonstale_hash_rate || 0);
   const global_doa_rate = pool_hash_rate - pool_nonstale_hash_rate;
