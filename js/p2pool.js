@@ -26,13 +26,14 @@ const default_config = {
 };
 config = { ...default_config, ...config };
 
-var currency, currency_info, rate, local_stats, global_stats, current_payouts, recent_blocks, payout_addr;
-var local_hashrate = 0, local_doa_hashrate = 0;
+let currency;
+let set_currency_symbol = true;
+const p2pool_data = {}
 
 // ==================================================================
 // event handlers
 
-$(document).ready(function () {
+$(document).ready(() => {
   $(document).trigger('init');
 
   if (config.header_content_url && config.header_content_url.length > 0) {
@@ -41,45 +42,33 @@ $(document).ready(function () {
 });
 
 // toggle hashrate chart
-$('#hour.hashrate').click(function (e) {
-  fetchGraph('hour');
-});
-$('#day.hashrate').click(function (e) {
-  fetchGraph('day');
-});
-$('#week.hashrate').click(function (e) {
-  fetchGraph('week');
-});
-$('#month.hashrate').click(function (e) {
-  fetchGraph('month');
-});
-$('#year.hashrate').click(function (e) {
-  fetchGraph('year');
-});
+$('#hour.hashrate').click(() => { fetchGraph('hour') });
+$('#day.hashrate').click(() => { fetchGraph('day') });
+$('#week.hashrate').click(() => { fetchGraph('week') });
+$('#month.hashrate').click(() => { fetchGraph('month') });
+$('#year.hashrate').click(() => { fetchGraph('year') });
 
-$('#setminers.btn').click(function (e) {
-  setMyMiners();
-});
+$('#setminers.btn').click(() => { setMyMiners() });
 
 // ==================================================================
 // custom event handlers
 
 // init
-$(document).on('init', function (e, eventInfo) {
+$(document).on('init', () => {
   fetchBlocks();
-  fetchdata();
+  fetchData();
   fetchGraph('day');
 
   fetchMyMiners();
   initThemes();
 });
 
-$(document).on('update', function (e, eventInfo) {
+$(document).on('update', () => {
   fetchBlocks();
-  fetchdata();
+  fetchData();
 });
 
-$(document).on('update_graph', function (e, eventInfo) {
+$(document).on('update_graph', () => {
   graphPeriod = chart.title.text.match(/\((.+)\)/)[1] || 'day';
   fetchGraph(graphPeriod);
 });
@@ -87,16 +76,20 @@ $(document).on('update_graph', function (e, eventInfo) {
 // Fills the list of active miners on this node.  I know, there are
 // zillions of people out there on p2pool.  But I'm typically only
 // interested to see, who is mining on my node.
-$(document).on('update_miners', function (e, eventInfo) {
-  local_hashrate = 0;
-  local_doa_hashrate = 0;
+$(document).on('update_miners', () => {
+  const local_stats = p2pool_data['local_stats'];
+  const global_stats = p2pool_data['global_stats'];
+  const current_payouts = p2pool_data['current_payouts'];
+
+  let local_hashrate = 0;
+  let local_doa_hashrate = 0;
 
   // Sort by hashrate, highest first
   miners = sortByValue(local_stats.miner_hash_rates).reverse();
   clientMiners = (localStorage.miners && localStorage.miners.length > 0) ? localStorage.miners.split("\n") : [];
 
   $('#active_miners').find("tr:gt(0)").remove();
-  $.each(miners, function (_, address) {
+  $.each(miners, (_, address) => {
     // Only display client miners if configured
     if (localStorage.onlyclientminers === 'true' && $.inArray(address, clientMiners) == -1) {
       return true;
@@ -117,7 +110,7 @@ $(document).on('update_miners', function (e, eventInfo) {
     address_span = $('<span/>').addClass('coin_address').text(address);
     link_icon = $('<i/>').addClass('fa fa-external-link fa-fw');
     blockinfo = $('<a/>')
-      .attr('href', currency_info.address_explorer_url_prefix + address)
+      .attr('href', p2pool_data['currency_info'].address_explorer_url_prefix + address)
       .attr('target', '_blank').append(link_icon);
 
     doa = local_stats.miner_dead_hash_rates[address] || 0;
@@ -148,10 +141,10 @@ $(document).on('update_miners', function (e, eventInfo) {
       time_to_share = (parseInt(local_stats.attempts_to_share) / parseInt(hashrate) * (diff / parseFloat(global_stats.min_difficulty))) || 0;
 
       if ($("#active_miners th:contains('Share Difficulty')").length == 0) {
-        var share_diff_col = $('<th/>')
+        const share_diff_col = $('<th/>')
           .addClass('text-right')
           .text('Share Difficulty');
-        var time_to_share_col = $('<th/>')
+        const time_to_share_col = $('<th/>')
           .addClass('text-right')
           .text('Time to Share');
 
@@ -219,7 +212,7 @@ $(document).on('update_miners', function (e, eventInfo) {
     //<li class="list-group-item">Network Hashrate: <span class="network_rate"></span></li>
     if ($(".status li:contains('Network Hashrate')").length == 0) {
       // Add network hashrate bar to status area if it doesn't already exist
-      var nethash_row = $('<li/>')
+      const nethash_row = $('<li/>')
         .addClass('list-group-item')
         .text('Network Hashrate: ')
         .append($('<span/>').addClass('network_rate'));
@@ -235,7 +228,7 @@ $(document).on('update_miners', function (e, eventInfo) {
   if (global_stats.network_block_difficulty) {
     // Add diff button to the navbar if it doesn't already exist
     if ($('button .diff').length == 0) {
-      var diff_button = $('<button/>')
+      const diff_button = $('<button/>')
         .attr('type', 'button')
         .addClass('btn navbar-btn btn-default btn-sm')
         .text('Diff: ')
@@ -244,7 +237,7 @@ $(document).on('update_miners', function (e, eventInfo) {
     }
     // Add diff bar to status area if it doesn't already exist
     if ($(".status li:contains('Network Block Difficulty')").length == 0) {
-      var diff_row = $('<li/>')
+      const diff_row = $('<li/>')
         .addClass('list-group-item')
         .text('Network Block Difficulty: ')
         .append($('<span/>').addClass('diff'));
@@ -278,17 +271,17 @@ $(document).on('update_miners', function (e, eventInfo) {
   if (local_stats.warnings.length > 0) {
     $('#node_alerts').empty();
 
-    $.each(local_stats.warnings, function (key, warning) {
+    $.each(local_stats.warnings, (key, warning) => {
       $('#node_alerts').append($('<p/>').append(warning));
     });
 
-    $('#node_alerts').fadeIn(1000, function () {
+    $('#node_alerts').fadeIn(1000, function() {
       $(this).removeClass('hidden');
     });
   }
   else {
     if (!$('#node_alerts').hasClass('hidden')) {
-      $('#node_alerts').fadeOut(1000, function () {
+      $('#node_alerts').fadeOut(1000, function() {
         $(this).addClass('hidden');
       });
     }
@@ -313,17 +306,19 @@ $(document).on('update_miners', function (e, eventInfo) {
 });
 
 // Fills the recent block table
-$(document).on('update_blocks', function (e, eventInfo) {
+$(document).on('update_blocks', () => {
+  const recent_blocks = p2pool_data['recent_blocks'];
+
   $('#recent_blocks').find('tbody tr').remove();
 
-  $.each(recent_blocks, function (key, block) {
+  $.each(recent_blocks, (key, block) => {
     ts = block.ts;
     num = block.number;
     hash = block.hash;
 
     // link to blockchain.info for the given hash
     blockinfo = $('<a/>')
-      .attr('href', currency_info.block_explorer_url_prefix + hash)
+      .attr('href', p2pool_data['currency_info'].block_explorer_url_prefix + hash)
       .attr('target', '_blank').text(num);
 
     tr = $('<tr/>').attr('id', num);
@@ -342,15 +337,17 @@ $(document).on('update_blocks', function (e, eventInfo) {
   }
 });
 
-$(document).on('update_shares', function (e, eventInfo) {
-  $.each(recent_blocks, function (key, block) {
+$(document).on('update_shares', () => {
+  const recent_blocks = p2pool_data['recent_blocks'];
+
+  $.each(recent_blocks, (key, block) => {
     ts = block.ts;
     num = block.number;
     hash = block.hash;
 
     // link to blockchain.info for the given hash
     blockinfo = $('<a/>')
-      .attr('href', currency_info.block_explorer_url_prefix + hash)
+      .attr('href', p2pool_data['currency_info'].block_explorer_url_prefix + hash)
       .attr('target', '_blank').text(hash);
 
     tr = $('<tr/>').attr('id', num);
@@ -364,9 +361,10 @@ $(document).on('update_shares', function (e, eventInfo) {
 
 // Place the currency symbol for the currency the node is mining.  If
 // it's Bitcoin, use the fontawesome BTC icon
-var set_currency_symbol = true;
-$(document).on('update_currency', function (e, eventInfo) {
-  if (currency_info.symbol === 'BTC') {
+$(document).on('update_currency', () => {
+  const currency_info = p2pool_data['currency_info'];
+
+  if (p2pool_data['currency_info'].symbol === 'BTC') {
     // use fontawesome BTC symbol
     currency = $('<i/>').attr('class', 'fa fa-btc fa-fw');
   }
@@ -381,102 +379,95 @@ $(document).on('update_currency', function (e, eventInfo) {
 });
 
 // Updates the 'Updated:' field in page header
-$(document).on('update_time', function (e, eventInfo) {
+$(document).on('update_time', () => {
   dts = $.format.date(new Date(), 'yyyy-MM-dd hh:mm:ss p');
   $('#updated').text(dts);
 });
 
 // ==================================================================
 
-var fetchdata = function () {
-  $.getJSON(config.host + '/rate', function (data) {
-    if (data) { rate = data; }
-  });
+const fetchData = async () => {
+  // URL Segment => p2pool_data[key]
+  const p2pool_map = {
+    '/rate': 'rate',
+    '/web/currency_info': 'currency_info',
+    '/local_stats': 'local_stats',
+    '/current_payouts': 'current_payouts',
+    '/global_stats': 'global_stats'
+  }
 
-  $.getJSON(config.host + '/web/currency_info', function (data) {
-    if (data) { currency_info = data; }
-    $(document).trigger('update_currency');
+  for (const segment in p2pool_map) {
+    const resp = await fetch(new URL(segment, config.host), { cache: 'no-cache' });
+    p2pool_data[p2pool_map[segment]] = await resp.json();
+  }
 
-    $.getJSON(config.host + '/local_stats', function (data) {
-      if (data) { local_stats = data; }
-
-      $.getJSON(config.host + '/current_payouts', function (data) {
-        if (data) { current_payouts = data; }
-
-        $.getJSON(config.host + '/payout_addr', function (data) {
-          if (data) { payout_addr = data; }
-
-          $.getJSON(config.host + '/global_stats', function (data) {
-            if (data) { global_stats = data; }
-
-            $(document).trigger('update_miners');
-            $(document).trigger('update_time');
-          });
-        });
-      });
-    });
-  });
+  $(document).trigger('update_currency');
+  $(document).trigger('update_miners');
+  $(document).trigger('update_time');
 };
 
-var fetchBlocks = function () {
-  $.getJSON(config.host + '/web/currency_info', function (data) {
-    if (data) { currency_info = data; }
+const fetchBlocks = async () => {
+  const p2pool_map = {
+    '/web/currency_info': 'currency_info',
+    '/recent_blocks': 'recent_blocks'
+  };
 
-    $.getJSON(config.host + '/recent_blocks', function (data) {
-      if (data) { recent_blocks = data; }
-      $(document).trigger('update_blocks');
-    });
-  });
+  for (const segment in p2pool_map) {
+    const resp = await fetch(new URL(segment, config.host), { cache: 'no-cache' });
+    p2pool_data[p2pool_map[segment]] = await resp.json();
+  }
+
+  $(document).trigger('update_blocks');
 };
 
-var fetchGraph = function (interval) {
-  var graph_hashrate = [], graph_doa_hashrate = [], graph_blocks = [];
+const fetchGraph = async (interval) => {
+  const graph_hashrate = [], graph_doa_hashrate = [], graph_blocks = [];
 
-  // Fetch Local Hashrates
-  $.getJSON(config.host + '/web/graph_data/local_hash_rate/last_' + interval, function (data) {
-    $.each(data, function (key, value) {
-      el = [];
-      el.push(parseInt(value[0]) * 1000, parseFloat(value[1]));
-      graph_hashrate.push(el);
-    });
+  const hash_response = await fetch(new URL(`/web/graph_data/local_hash_rate/last_${interval}`, config.host), { cache: 'no-cache' });
+  const doa_hash_response = await fetch(new URL(`/web/graph_data/local_dead_hash_rate/last_${interval}`, config.host), { cache: 'no-cache' });
 
-    graph_hashrate.sort();
+  const hashrate_data = await hash_response.json();
+  const doa_hashrate_data = await doa_hash_response.json();
 
-    // Fetch Local DOA Hashrates
-    $.getJSON(config.host + '/web/graph_data/local_dead_hash_rate/last_' + interval, function (data) {
-      $.each(data, function (key, value) {
-        el = [];
-        el.push(parseInt(value[0]) * 1000, parseFloat(value[1]));
-        graph_doa_hashrate.push(el);
-      });
+  for (const key in hashrate_data) {
+    const value = hashrate_data[key];
 
-      graph_doa_hashrate.sort();
+    el = [];
+    el.push(parseInt(value[0]) * 1000, parseFloat(value[1]));
+    graph_hashrate.push(el);
+  }
+  graph_hashrate.sort();
 
-      // Fetch Recently Found Blocks
-      $.getJSON(config.host + '/recent_blocks', function (data) {
-        $.each(data, function (key, block) {
-          el = [];
-          el.push(parseInt(block["ts"]) * 1000);
-          graph_blocks.push(el);
-        });
+  for (const key in doa_hashrate_data) {
+    const value = doa_hashrate_data[key];
 
-        draw(graph_hashrate, graph_doa_hashrate, graph_blocks, 'chart', interval);
-      });
-    });
-  });
+    el = [];
+    el.push(parseInt(value[0]) * 1000, parseFloat(value[1]));
+    graph_doa_hashrate.push(el);
+  }
+  graph_doa_hashrate.sort();
+
+  for (const block of p2pool_data['recent_blocks']) {
+    el = [];
+    el.push(parseInt(block["ts"]) * 1000);
+    graph_blocks.push(el);
+  }
+
+  draw(graph_hashrate, graph_doa_hashrate, graph_blocks, 'chart', interval);
 };
 
-var setMyMiners = function () {
+const setMyMiners = () => {
   localStorage.miners = $('#myminers').val();
   localStorage.onlyclientminers = $('#onlymyminers').prop('checked');
   $(document).trigger('update_miners');
 };
-var fetchMyMiners = function () {
+
+const fetchMyMiners = () => {
   $('#myminers').val(localStorage.miners);
   $('#onlymyminers').prop('checked', localStorage.onlyclientminers == 'true' ? true : false);
 };
 
-const initThemes = function() {
+const initThemes = () => {
   localStorage.theme = localStorage.theme || 'default';
 
   for (const theme of config.available_themes) {
@@ -498,16 +489,16 @@ const initThemes = function() {
     $('#theme-list').append(li)
   }
 };
-const changeTheme = function(theme) {
+const changeTheme = (theme) => {
   $('#theme').attr('href', 'css/bootstrap-' + theme.toLowerCase().trim() + '.min.css');
 };
 
 // update tables and miner data
-setInterval(function () {
+setInterval(() => {
   $(document).trigger('update');
 }, config.reload_interval * 1000);
 
 // update blocks and graph
-setInterval(function () {
+setInterval(() => {
   $(document).trigger('update_graph');
 }, config.reload_chart_interval * 1000);
